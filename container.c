@@ -1,0 +1,170 @@
+#include <stdlib.h>
+#include <strings.h>
+#include <ctype.h>
+
+#include "container.h"
+#include "room.h"
+#include "item.h"
+
+#define FREE(ptr)     \
+    {                 \
+        free(ptr);    \
+        (ptr) = NULL; \
+    }
+
+#define CHECK_NULL(ptr)    \
+    {                      \
+        if ((ptr) == NULL) \
+        {                  \
+            return NULL;   \
+        }                  \
+    }
+
+struct container *create_container(struct container *first, enum container_type type, void *entry)
+{
+    CHECK_NULL(entry);
+
+    if (first != NULL && first->type != type)
+    {
+        return NULL;
+    }
+
+    struct container *new = malloc(sizeof(struct container));
+    new->type = type;
+    new->next = NULL;
+
+    switch (type)
+    {
+    case ROOM:
+        new->room = (struct room *)entry;
+        break;
+
+    case ITEM:
+        new->item = (struct item *)entry;
+        break;
+
+    case COMMAND:
+        new->command = (struct command *)entry;
+        break;
+
+    case TEXT:
+        new->text = (char *)entry;
+        break;
+    }
+
+    // append
+    struct container **next = &first;
+    while (*next != NULL)
+    {
+        next = &(*next)->next;
+    }
+
+    return *next = new;
+}
+
+struct container *destroy_containers(struct container *first)
+{
+    CHECK_NULL(first);
+
+    switch (first->type)
+    {
+    case ROOM:
+        first->room = destroy_room(first->room);
+        break;
+
+    case ITEM:
+        first->item = destroy_item(first->item);
+        break;
+
+    case COMMAND:
+        first->command = destroy_command(first->command);
+        break;
+
+    case TEXT:
+        FREE(first->text);
+        break;
+    }
+
+    FREE(first);
+    return first->next = destroy_containers(first->next);
+}
+
+void *get_from_container_by_name(struct container *first, const char *name)
+{
+    CHECK_NULL(first);
+    CHECK_NULL(name);
+
+    // find
+    const char *entry_name;
+    void *entry;
+    switch (first->type)
+    {
+    case ROOM:
+        entry_name = first->room->name;
+        entry = (struct room *)first->room;
+        break;
+
+    case ITEM:
+        entry_name = first->item->name;
+        entry = (struct item *)first->item;
+        break;
+
+    case COMMAND:
+        entry_name = first->command->name;
+        entry = (struct command *)first->command;
+        break;
+
+    case TEXT:
+        entry_name = first->text;
+        entry = (char *)first->text;
+        break;
+    }
+
+    // compare
+    return strcasecmp(name, entry_name) == 0 ? entry : get_from_container_by_name(first->next, name);
+}
+
+struct container *remove_container(struct container *first, void *entry)
+{
+    CHECK_NULL(first);
+    CHECK_NULL(entry);
+
+    struct container **next = &first;
+    while (*next != NULL)
+    {
+        // find
+        bool identical = false;
+        switch ((*next)->type)
+        {
+        case ROOM:
+            identical = (*next)->room == (struct room *)entry;
+            break;
+
+        case ITEM:
+            identical = (*next)->item == (struct item *)entry;
+            break;
+
+        case COMMAND:
+            identical = (*next)->command == (struct command *)entry;
+            break;
+
+        case TEXT:
+            identical = (*next)->text == (char *)entry;
+            break;
+        }
+
+        // remove & dealloc just container
+        if (identical)
+        {
+            struct container *tmp = *next;
+            *next = (*next)->next;
+
+            free(tmp);
+            return tmp == first ? first->next : first;
+        }
+
+        next = &(*next)->next;
+    }
+
+    return first;
+}
