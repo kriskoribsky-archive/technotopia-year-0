@@ -1,6 +1,8 @@
+#define _POSIX_C_SOURCE 200809L
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "room.h"
 
@@ -39,11 +41,12 @@ struct room *create_room(char *name, char *description)
     struct room *new;
     MALLOC(1, new);
 
-    new->name = name;
-    new->description = description;
+    new->name = strdup(name);
+    new->description = strdup(description);
     new->north = new->south = new->east = new->west = NULL;
     new->items = NULL;
 
+    ASSERT(new->name != NULL &&new->description != NULL);
     return new;
 }
 
