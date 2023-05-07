@@ -1,9 +1,16 @@
+#include <assert.h>
 #include <stdlib.h>
 #include <strings.h>
 
 #include "container.h"
 #include "room.h"
 #include "item.h"
+
+#define MALLOC(nmemb, ptr)                          \
+    {                                               \
+        (ptr) = malloc((nmemb) * (sizeof(*(ptr)))); \
+        assert((ptr) != NULL);                      \
+    }
 
 #define FREE(ptr)     \
     {                 \
@@ -28,7 +35,9 @@ struct container *create_container(struct container *first, enum container_type 
         return NULL;
     }
 
-    struct container *new = malloc(sizeof(struct container));
+    struct container *new;
+    MALLOC(1, new);
+
     new->type = type;
     new->next = NULL;
 
