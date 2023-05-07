@@ -46,12 +46,7 @@ struct command *create_command(char *name, char *description, char *pattern, siz
     ASSERT(new->name != NULL &&new->description != NULL);
 
     // precompile pattern
-    int result = regcomp(&new->preg, pattern, REG_EXTENDED | REG_ICASE | REG_NOSUB);
-    /*
-        REG_EXTENDED    Use POSIX Extended Regular Expression syntax
-        REG_ICASE       Pattern buffer will be case insensitive
-        REG_NOSUB       Do not report position of group matches
-    */
+    int result = regcomp(&new->preg, pattern, REG_EXTENDED | REG_ICASE | REG_NOSUB); // TODO: Check if groups will be important later
     ASSERT(result == 0);
     if (result != 0)
     {
@@ -71,7 +66,8 @@ struct command *destroy_command(struct command *command)
     FREE(command->name);
     FREE(command->description);
 
-    for (int i = 0; i < command->nmatch; i++)
+    // TODO: review & confirm this implementation
+    for (size_t i = 0; i < command->nmatch; i++)
     {
         FREE(command->groups[i]);
     }
