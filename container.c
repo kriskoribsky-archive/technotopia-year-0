@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <strings.h>
-#include <ctype.h>
 
 #include "container.h"
 #include "room.h"
