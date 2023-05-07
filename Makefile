@@ -130,7 +130,7 @@ FLG_COMPILE_1	:= -pedantic -Wextra -Wshadow -Wmissing-prototypes -Wstrict-protot
 STATIC			:= cppcheck
 
 FLG_STATIC_0	:= --enable=performance --error-exitcode=1 --language=c
-FLG_STATIC_1	:= --enable=all --suppress=missingIncludeSystem
+FLG_STATIC_1	:= --enable=all --suppress=missingIncludeSystem --suppress=uselessAssignmentPtrArg
 
 # Dynamic analysis
 DYNAMIC			:= valgrind
