@@ -4,6 +4,13 @@
 
 #include "container.h"
 
+#ifdef DEBUG
+#include <assert.h>
+#define ASSERT(expr) assert(expr)
+#else
+#define ASSERT(expr) ((void)0)
+#endif
+
 #define MALLOC(nmemb, ptr)                          \
     {                                               \
         (ptr) = malloc((nmemb) * (sizeof(*(ptr)))); \
@@ -54,17 +61,15 @@ struct container *create_container(struct container *first, enum container_type 
         new->command = (struct command *)entry;
         break;
 
-    case TEXT:
+    case TEXT: // FIX why isn't TEXT type used anywhere?
         new->text = (char *)entry;
         break;
     }
 
     // append
-    struct container **next = &first;
-    while (*next != NULL)
-    {
-        next = &(*next)->next;
-    }
+    struct container **next;
+    for (next = &first; *next != NULL; next = &(*next)->next)
+        ;
 
     return *next = new;
 }
