@@ -80,5 +80,5 @@ struct command *destroy_command(struct command *command)
     FREE(command->groups);
     FREE(command);
 
-    return NULL;
+    return command;
 }

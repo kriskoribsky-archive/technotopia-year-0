@@ -57,5 +57,5 @@ struct item *destroy_item(struct item *item)
     FREE(item->description);
     FREE(item);
 
-    return NULL;
+    return item;
 }

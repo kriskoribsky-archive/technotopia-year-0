@@ -60,7 +60,7 @@ struct room *destroy_room(struct room *room)
     room->items = destroy_containers(room->items);
     FREE(room);
 
-    return NULL;
+    return room;
 }
 
 void set_exits_from_room(struct room *room, struct room *north, struct room *south, struct room *east, struct room *west)

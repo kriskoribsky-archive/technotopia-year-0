@@ -90,7 +90,7 @@ struct parser *destroy_parser(struct parser *parser)
     parser->commands = destroy_containers(parser->commands);
     FREE(parser);
 
-    return NULL;
+    return parser;
 }
 
 struct command *parse_input(struct parser *parser, char *input)

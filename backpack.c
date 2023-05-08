@@ -49,7 +49,7 @@ struct backpack *destroy_backpack(struct backpack *backpack)
     backpack->items = destroy_containers(backpack->items);
     FREE(backpack);
 
-    return NULL;
+    return backpack;
 }
 
 bool add_item_to_backpack(struct backpack *backpack, struct item *item)

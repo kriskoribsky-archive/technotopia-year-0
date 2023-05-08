@@ -93,7 +93,7 @@ struct container *destroy_containers(struct container *first)
     first->next = destroy_containers(first->next);
     FREE(first);
 
-    return NULL;
+    return first;
 }
 
 void *get_from_container_by_name(struct container *first, const char *name)
