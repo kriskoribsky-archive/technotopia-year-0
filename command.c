@@ -47,7 +47,8 @@ struct command *create_command(char *name, char *description, char *pattern, siz
 
     new->name = strdup(name);
     new->description = strdup(description);
-    ASSERT(new->name != NULL &&new->description != NULL);
+    ASSERT(new->name != NULL);
+    ASSERT(new->description != NULL);
 
     // precompile pattern
     int rc;
@@ -55,7 +56,7 @@ struct command *create_command(char *name, char *description, char *pattern, siz
     {
         char buffer[ERROR_BUFFER_SIZE];
         regerror(rc, &new->preg, buffer, sizeof(buffer));
-        fprintf(stderr, "regcomp() error: '%s'\n", buffer);
+        fprintf(stderr, "Error compiling regular expression: '%s'\n", buffer);
         exit(EXIT_FAILURE);
     }
 

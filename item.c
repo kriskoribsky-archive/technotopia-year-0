@@ -42,9 +42,10 @@ struct item *create_item(char *name, char *description, unsigned int properties)
 
     new->name = strdup(name);
     new->description = strdup(description);
+    ASSERT(new->name != NULL);
+    ASSERT(new->description != NULL);
     new->properties = properties;
 
-    ASSERT(new->name != NULL &&new->description != NULL);
     return new;
 }
 

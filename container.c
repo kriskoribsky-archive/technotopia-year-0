@@ -136,10 +136,9 @@ struct container *remove_container(struct container *first, void *entry)
     CHECK_NULL(first);
     CHECK_NULL(entry);
 
-    struct container **next = &first;
-    while (*next != NULL)
+    // find and remove container from linked container list
+    for (struct container **next = &first; *next != NULL; next = &(*next)->next)
     {
-        // find
         bool identical = false;
         switch ((*next)->type)
         {
@@ -160,17 +159,16 @@ struct container *remove_container(struct container *first, void *entry)
             break;
         }
 
-        // remove & dealloc just container
         if (identical)
         {
+            first = *next == first ? first->next : first;
+
             struct container *tmp = *next;
             *next = (*next)->next;
+            free(tmp); // TODO check if container (without entry) should be freed
 
-            free(tmp);
-            return tmp == first ? first->next : first;
+            return first;
         }
-
-        next = &(*next)->next;
     }
 
     return first;
