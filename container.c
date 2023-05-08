@@ -28,6 +28,7 @@ struct container *create_container(struct container *first, enum container_type 
 {
     CHECK_NULL(entry);
 
+    ASSERT(first == NULL || first->type == type);
     if (first != NULL && first->type != type)
     {
         return NULL;
