@@ -57,8 +57,8 @@ struct room *destroy_room(struct room *room)
     FREE(room->name);
     FREE(room->description);
     room->items = destroy_containers(room->items);
-
     FREE(room);
+
     return NULL;
 }
 

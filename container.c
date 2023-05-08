@@ -92,10 +92,9 @@ struct container *destroy_containers(struct container *first)
         FREE(first->text);
         break;
     }
-
     first->next = destroy_containers(first->next);
-
     FREE(first);
+
     return NULL;
 }
 
