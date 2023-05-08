@@ -1,5 +1,6 @@
 #define _POSIX_C_SOURCE 200809L
 #include <assert.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <regex.h>
@@ -33,6 +34,9 @@
         }                  \
     }
 
+#define ERROR_BUFFER_SIZE 256
+#define REGCOMP_SUCCESS 0
+
 struct command *create_command(char *name, char *description, char *pattern, size_t nmatch)
 {
     CHECK_NULL(name);
@@ -46,15 +50,17 @@ struct command *create_command(char *name, char *description, char *pattern, siz
     ASSERT(new->name != NULL &&new->description != NULL);
 
     // precompile pattern
-    int result = regcomp(&new->preg, pattern, REG_EXTENDED | REG_ICASE | REG_NOSUB); // TODO: Check if groups will be important later
-    ASSERT(result == 0);
-    if (result != 0)
+    int rc;
+    if ((rc = regcomp(&new->preg, pattern, REG_EXTENDED | REG_ICASE)) != REGCOMP_SUCCESS)
     {
-        return NULL;
+        char buffer[ERROR_BUFFER_SIZE];
+        regerror(rc, &new->preg, buffer, ERROR_BUFFER_SIZE);
+        fprintf(stderr, "regcomp() error: '%s'\n", buffer);
+        exit(EXIT_FAILURE);
     }
 
     new->nmatch = nmatch;
-    new->groups = NULL;
+    MALLOC(nmatch, new->groups);
 
     return new;
 }
@@ -65,13 +71,13 @@ struct command *destroy_command(struct command *command)
 
     FREE(command->name);
     FREE(command->description);
-
-    // TODO: review & confirm this implementation
+    regfree(&command->preg);
     for (size_t i = 0; i < command->nmatch; i++)
     {
         FREE(command->groups[i]);
     }
-
+    FREE(command->groups);
     FREE(command);
+
     return NULL;
 }
