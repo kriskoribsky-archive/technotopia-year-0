@@ -1,9 +1,9 @@
 #define _POSIX_C_SOURCE 200809L
 #include <assert.h>
 #include <ctype.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 #include <regex.h>
 
 #include "parser.h"
@@ -58,12 +58,12 @@ struct parser *create_parser()
     new->history = NULL;
     new->commands = NULL;
 
-    // load list of available commands
+    // load list of available commands      // TODO consider creating commands directly instead of loading file
     FILE *fp = fopen(COMMAND_FILE, "r");
     ASSERT(fp != NULL);
 
     // prepare file format
-    char format[64];
+    char format[128];
     sprintf(format, " '%%%d[^']' '%%%d[^']' %%d '%%%d[^']'", COMMAND_MAX_LEN - 1, COMMAND_MAX_LEN - 1, COMMAND_MAX_LEN - 1);
 
     // prepare buffers
@@ -124,7 +124,7 @@ struct command *parse_input(struct parser *parser, char *input)
         {
             char buffer[ERROR_BUFFER_SIZE];
             regerror(rc, &cmd->preg, buffer, sizeof(buffer));
-            fprintf(stderr, "Error matching regular expression: '%s'\n", buffer);
+            fprintf(stderr, "Error! Matching regular expression: '%s' failed.\n", buffer);
             exit(EXIT_FAILURE);
         }
     }

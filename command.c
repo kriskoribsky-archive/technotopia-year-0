@@ -56,7 +56,7 @@ struct command *create_command(char *name, char *description, char *pattern, siz
     {
         char buffer[ERROR_BUFFER_SIZE];
         regerror(rc, &new->preg, buffer, sizeof(buffer));
-        fprintf(stderr, "Error compiling regular expression: '%s'\n", buffer);
+        fprintf(stderr, "Error! Compilation of regular expression '%s' failed.\n", buffer);
         exit(EXIT_FAILURE);
     }
 
