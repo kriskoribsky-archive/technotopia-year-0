@@ -165,7 +165,7 @@ struct container *remove_container(struct container *first, void *entry)
 
             struct container *tmp = *next;
             *next = (*next)->next;
-            free(tmp); // TODO check if container (without entry) should be freed
+            free(tmp);
 
             return first;
         }

@@ -123,7 +123,7 @@ COMPILE			:= gcc -c
 DEPEND			:= -MMD -MF
 
 FLG_COMPILE_0	:= -std=c11 -Werror -Wall -Wconversion -ggdb3 $(addprefix -I, $(PATHS)) $(addprefix -D, $(MACRO))
-FLG_COMPILE_1	:= -pedantic -Wextra -Wshadow
+FLG_COMPILE_1	:= -pedantic -Wextra -Wshadow 
 
 
 # Static analysis

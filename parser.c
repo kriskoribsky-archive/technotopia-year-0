@@ -56,6 +56,7 @@ struct parser *create_parser()
     MALLOC(1, new);
 
     new->history = NULL;
+    new->commands = NULL;
 
     // load list of available commands
     FILE *fp = fopen(COMMAND_FILE, "r");
@@ -69,16 +70,13 @@ struct parser *create_parser()
     size_t nmatch;
     char name[COMMAND_MAX_LEN], description[COMMAND_MAX_LEN], pattern[COMMAND_MAX_LEN];
 
-    // load first command
-    fscanf(fp, format, name, pattern, &nmatch, description);
-    new->commands = create_container(NULL, COMMAND, create_command(name, description, pattern, nmatch));
-    ASSERT(new->commands != NULL);
-
-    // load rest of commands
+    // load commands
     while (fscanf(fp, format, name, pattern, &nmatch, description) == 4)
     {
-        create_container(new->commands, COMMAND, create_command(name, description, pattern, nmatch));
+        struct container *c = create_container(new->commands, COMMAND, create_command(name, description, pattern, nmatch));
+        new->commands = new->commands == NULL ? c : new->commands;
     }
+    ASSERT(new->commands != NULL);
 
     fclose(fp);
     return new;

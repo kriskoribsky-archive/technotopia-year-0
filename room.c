@@ -125,7 +125,8 @@ void delete_item_from_room(struct room *room, struct item *item)
 void add_item_to_room(struct room *room, struct item *item)
 {
     ASSERT(room != NULL && item != NULL);
-    create_container(room->items, ITEM, item);
+    struct container *c = create_container(room->items, ITEM, item);
+    room->items = room->items == NULL ? c : room->items;
 }
 
 struct item *get_item_from_room(const struct room *room, const char *name)
