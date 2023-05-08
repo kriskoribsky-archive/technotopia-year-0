@@ -54,7 +54,7 @@ struct command *create_command(char *name, char *description, char *pattern, siz
     if ((rc = regcomp(&new->preg, pattern, REG_EXTENDED | REG_ICASE)) != REGCOMP_SUCCESS)
     {
         char buffer[ERROR_BUFFER_SIZE];
-        regerror(rc, &new->preg, buffer, ERROR_BUFFER_SIZE);
+        regerror(rc, &new->preg, buffer, sizeof(buffer));
         fprintf(stderr, "regcomp() error: '%s'\n", buffer);
         exit(EXIT_FAILURE);
     }
