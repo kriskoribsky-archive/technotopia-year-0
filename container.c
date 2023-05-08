@@ -3,8 +3,6 @@
 #include <strings.h>
 
 #include "container.h"
-#include "room.h"
-#include "item.h"
 
 #define MALLOC(nmemb, ptr)                          \
     {                                               \
