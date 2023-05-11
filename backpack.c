@@ -69,7 +69,7 @@ bool add_item_to_backpack(struct backpack *backpack, struct item *item)
 void delete_item_from_backpack(struct backpack *backpack, struct item *item)
 {
     ASSERT(backpack != NULL && item != NULL);
-    remove_container(backpack->items, item);
+    backpack->items = remove_container(backpack->items, item);
 }
 
 struct item *get_item_from_backpack(const struct backpack *backpack, char *name)

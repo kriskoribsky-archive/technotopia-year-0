@@ -119,7 +119,7 @@ void show_room(const struct room *room)
 void delete_item_from_room(struct room *room, struct item *item)
 {
     ASSERT(room != NULL && item != NULL);
-    remove_container(room->items, item);
+    room->items = remove_container(room->items, item);
 }
 
 void add_item_to_room(struct room *room, struct item *item)

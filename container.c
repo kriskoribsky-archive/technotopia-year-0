@@ -1,5 +1,7 @@
+#define _POSIX_C_SOURCE 200809L
 #include <assert.h>
 #include <stdlib.h>
+#include <string.h>
 #include <strings.h>
 
 #include "container.h"
@@ -62,7 +64,7 @@ struct container *create_container(struct container *first, enum container_type 
         break;
 
     case TEXT: // FIX why isn't TEXT type used anywhere?
-        new->text = (char *)entry;
+        new->text = strdup((char *)entry);
         break;
     }
 
@@ -140,7 +142,10 @@ void *get_from_container_by_name(struct container *first, const char *name)
 struct container *remove_container(struct container *first, void *entry)
 {
     CHECK_NULL(first);
-    CHECK_NULL(entry);
+    if (entry == NULL)
+    {
+        return first;
+    }
 
     // find and remove container from linked container list
     for (struct container **next = &first; *next != NULL; next = &(*next)->next)
@@ -161,19 +166,17 @@ struct container *remove_container(struct container *first, void *entry)
             break;
 
         case TEXT:
-            identical = (*next)->text == (char *)entry;
+            identical = strcmp((*next)->text, (char *)entry) == 0 ? true : false;
             break;
         }
 
         if (identical)
         {
-            first = *next == first ? first->next : first;
-
             struct container *tmp = *next;
             *next = (*next)->next;
             free(tmp);
 
-            return first;
+            return first; // already shifted for removal of first element
         }
     }
 

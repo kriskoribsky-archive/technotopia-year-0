@@ -80,6 +80,7 @@ struct parser *create_parser()
     create_container(first, COMMAND, create_command("NAHRAJ", "Nahrať uloženú hru z disku.", "NAHRAJ|LOAD (.*)?", 2));
 
     ASSERT(first != NULL);
+    
     new->commands = first;
     new->history = NULL;
 

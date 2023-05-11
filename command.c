@@ -62,6 +62,10 @@ struct command *create_command(char *name, char *description, char *pattern, siz
 
     new->nmatch = nmatch;
     MALLOC(nmatch, new->groups);
+    for (size_t i = 0; i < nmatch; i++)
+    {
+        new->groups[i] = NULL;
+    }
 
     return new;
 }
