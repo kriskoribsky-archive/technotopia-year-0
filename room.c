@@ -89,7 +89,6 @@ void show_room(const struct room *room)
     if (room->items)
     {
         printf("Predmety v miestnosti:\n");
-
         for (struct container *current = room->items; current != NULL; current = current->next)
         {
             printf("\t%s\n", current->item->name);
@@ -125,8 +124,7 @@ void delete_item_from_room(struct room *room, struct item *item)
 void add_item_to_room(struct room *room, struct item *item)
 {
     ASSERT(room != NULL && item != NULL);
-    struct container *c = create_container(room->items, ITEM, item);
-    room->items = room->items == NULL ? c : room->items;
+    room->items = create_container(room->items, ITEM, item);
 }
 
 struct item *get_item_from_room(const struct room *room, const char *name)

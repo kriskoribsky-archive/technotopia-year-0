@@ -58,9 +58,8 @@ bool add_item_to_backpack(struct backpack *backpack, struct item *item)
 
     if ((item->properties & MOVABLE) && (backpack->size + 1 <= backpack->capacity))
     {
-        struct container *c = create_container(backpack->items, ITEM, item);
-        backpack->items = backpack->items == NULL ? c : backpack->items;
-
+        backpack->items = create_container(backpack->items, ITEM, item);
+        backpack->size++;
         return true;
     }
     return false;
@@ -70,6 +69,7 @@ void delete_item_from_backpack(struct backpack *backpack, struct item *item)
 {
     ASSERT(backpack != NULL && item != NULL);
     backpack->items = remove_container(backpack->items, item);
+    backpack->size--;
 }
 
 struct item *get_item_from_backpack(const struct backpack *backpack, char *name)

@@ -2,9 +2,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// TODO write unit tests
+#include "game.h"
+
 int main(void)
 {
+    struct game *game = create_game();
+
+    play_game(game);
+
+    destroy_game(game);
 
     return EXIT_SUCCESS;
 }

@@ -9,6 +9,7 @@ void test_create_container_works_for_type_room(void);
 void test_create_container_works_for_type_item(void);
 void test_create_container_works_for_type_command(void);
 void test_create_container_works_for_type_text(void);
+void test_create_container_doesnt_set_first_implicitly(void);
 void test_create_container_returns_null_on_null_entry(void);
 void test_create_container_returns_null_on_different_entry_type(void);
 void test_create_container_appends_entry_on_same_entry_type(void);
@@ -28,6 +29,7 @@ void test_remove_container_works_for_type_room(void);
 void test_remove_container_works_for_type_item(void);
 void test_remove_container_works_for_type_command(void);
 void test_remove_container_works_for_type_text(void);
+void test_remove_container_doesnt_set_first_implicitly(void);
 void test_remove_container_removes_first_entry(void);
 void test_remove_container_returns_null_on_last_entry(void);
 void test_remove_container_content_of_container_stays(void);
@@ -44,6 +46,7 @@ int main(void)
     RUN_TEST(test_create_container_works_for_type_item);
     RUN_TEST(test_create_container_works_for_type_command);
     RUN_TEST(test_create_container_works_for_type_text);
+    RUN_TEST(test_create_container_doesnt_set_first_implicitly);
     RUN_TEST(test_create_container_returns_null_on_null_entry);
     RUN_TEST(test_create_container_returns_null_on_different_entry_type);
     RUN_TEST(test_create_container_appends_entry_on_same_entry_type);
@@ -63,6 +66,7 @@ int main(void)
     RUN_TEST(test_remove_container_works_for_type_item);
     RUN_TEST(test_remove_container_works_for_type_command);
     RUN_TEST(test_remove_container_works_for_type_text);
+    RUN_TEST(test_remove_container_doesnt_set_first_implicitly);
     RUN_TEST(test_remove_container_removes_first_entry);
     RUN_TEST(test_remove_container_returns_null_on_last_entry);
     RUN_TEST(test_remove_container_content_of_container_stays);
@@ -103,6 +107,13 @@ void test_create_container_works_for_type_text(void)
 {
     c = create_container(NULL, TEXT, "tesad");
     TEST_ASSERT_EQUAL(TEXT, c->type);
+}
+
+void test_create_container_doesnt_set_first_implicitly(void)
+{
+    c = NULL;
+    create_container(c, TEXT, "test");
+    TEST_ASSERT_NULL(c);
 }
 
 void test_create_container_returns_null_on_null_entry(void)
@@ -295,6 +306,15 @@ void test_remove_container_works_for_type_text(void)
     TEST_ASSERT_NOT_EQUAL(target_text, c->next->next->text);
     TEST_ASSERT_NOT_EQUAL(next_text, c->next->next->next->next->text);
     TEST_ASSERT_EQUAL_STRING(next_text, remove_container(c, target_text)->next->next->next->text);
+}
+
+void test_remove_container_doesnt_set_first_implicitly(void)
+{
+    struct room *target_room = create_room("room 1", "room desc 1");
+    struct container *local = create_container(NULL, ROOM, target_room);
+    remove_container(local, target_room);
+
+    TEST_ASSERT_NOT_NULL(local);
 }
 
 void test_remove_container_removes_first_entry(void)

@@ -174,11 +174,10 @@ struct container *remove_container(struct container *first, void *entry)
         {
             struct container *tmp = *next;
             *next = (*next)->next;
-            free(tmp);
-
-            return first; // already shifted for removal of first element
+            FREE(tmp);
+            break;
         }
     }
 
-    return first;
+    return first; // already shifted if first element removed
 }

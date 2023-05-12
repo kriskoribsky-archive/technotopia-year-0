@@ -15,6 +15,8 @@
 #define ASSERT(expr) ((void)0)
 #endif
 
+#define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
+
 #define MALLOC(nmemb, ptr)                          \
     {                                               \
         (ptr) = malloc((nmemb) * (sizeof(*(ptr)))); \
@@ -50,37 +52,47 @@ char *trim(char *s);
 
 struct parser *create_parser()
 {
+    // predefine commands
+    struct command *commands[] =
+        {
+            create_command("PRESKUMAJ", "Opis predmetu v batohu/miestnosti.", "PRESKUMAJ|SEARCH (.*)", 2),
+            create_command("VEZMI", "Vložíť predmet z miestnosti do batohu.", "VEZMI|TAKE (.*)", 2),
+            create_command("POLOZ", "Položíť predmet z batohu do miestnosti.", "POLOZ|PUT (.*)", 2),
+            create_command("POUZI", "Použiť predmet z batohu alebo miestnosti.", "POUZI|USE (.*)", 2),
+
+            create_command("ROZHLIADNI SA", "Informácie o miestnosti.", "ROZHLIADNI SA|LOOK", 1),
+            create_command("INVENTAR", "Zobrazíť obsah batohu.", "INVENTAR|INVENTORY|I", 1),
+
+            create_command("SEVER", "Ísť smerom na sever od aktuálnej pozície.", "SEVER|S", 1),
+            create_command("JUH", "Ísť smerom na juh od aktuálnej pozície.", "JUH|J", 1),
+            create_command("VYCHOD", "Ísť smerom na východ od aktuálnej pozície.", "VYCHOD|V", 1),
+            create_command("ZAPAD", "Ísť smerom na západ od aktuálnej pozície.", "ZAPAD|Z", 1),
+
+            create_command("O HRE", "Zobraziť krátky úvod do príbehu.", "O HRE|ABOUT", 1),
+            create_command("PRIKAZY", "Zoznam všetkých príkazov hry.", "PRIKAZY|HELP|POMOC", 1),
+            create_command("VERZIA", "Číslo verzie hry a kontakt na autora.", "VERZIA|VERSION", 1),
+
+            create_command("KONIEC", "Ukončiť hru.", "KONIEC|QUIT|EXIT", 1),
+            create_command("RESTART", "Spustíť hru od začiatku.", "RESTART", 1),
+
+            create_command("ULOZ", "Uložíť stav rozohratej hry na disk.", "ULOZ|SAVE (.*)?", 2),
+            create_command("NAHRAJ", "Nahrať uloženú hru z disku.", "NAHRAJ|LOAD (.*)?", 2),
+        };
+
+    // create container list out of commands
+    int n = ARRAY_SIZE(commands);
+    struct container *first = create_container(NULL, COMMAND, commands[0]);
+    for (int i = 1; i < n; i++)
+    {
+        create_container(first, COMMAND, commands[i]);
+    }
+
+    // create parser
     struct parser *new;
     MALLOC(1, new);
 
-    // create list of available commands
-    struct container *first = NULL;
-
-    create_container(first, COMMAND, create_command("PRESKUMAJ", "Opis predmetu v batohu/miestnosti.", "PRESKUMAJ|SEARCH (.*)", 2));
-    create_container(first, COMMAND, create_command("VEZMI", "Vložíť predmet z miestnosti do batohu.", "VEZMI|TAKE (.*)", 2));
-    create_container(first, COMMAND, create_command("POLOZ", "Položíť predmet z batohu do miestnosti.", "POLOZ|PUT (.*)", 2));
-    create_container(first, COMMAND, create_command("POUZI", "Použiť predmet z batohu alebo miestnosti.", "POUZI|USE (.*)", 2));
-
-    create_container(first, COMMAND, create_command("ROZHLIADNI SA", "Informácie o miestnosti.", "ROZHLIADNI SA|LOOK", 1));
-    create_container(first, COMMAND, create_command("INVENTAR", "Zobrazíť obsah batohu.", "INVENTAR|INVENTORY|I", 1));
-
-    create_container(first, COMMAND, create_command("SEVER", "Ísť smerom na sever od aktuálnej pozície.", "SEVER|S", 1));
-    create_container(first, COMMAND, create_command("JUH", "Ísť smerom na juh od aktuálnej pozície.", "JUH|J", 1));
-    create_container(first, COMMAND, create_command("VYCHOD", "Ísť smerom na východ od aktuálnej pozície.", "VYCHOD|V", 1));
-    create_container(first, COMMAND, create_command("ZAPAD", "Ísť smerom na západ od aktuálnej pozície.", "ZAPAD|Z", 1));
-
-    create_container(first, COMMAND, create_command("O HRE", "Zobraziť krátky úvod do príbehu.", "O HRE|ABOUT", 1));
-    create_container(first, COMMAND, create_command("PRIKAZY", "Zoznam všetkých príkazov hry.", "PRIKAZY|HELP|POMOC", 1));
-    create_container(first, COMMAND, create_command("VERZIA", "Číslo verzie hry a kontakt na autora.", "VERZIA|VERSION", 1));
-
-    create_container(first, COMMAND, create_command("KONIEC", "Ukončiť hru.", "KONIEC|QUIT|EXIT", 1));
-    create_container(first, COMMAND, create_command("RESTART", "Spustíť hru od začiatku.", "RESTART", 1));
-
-    create_container(first, COMMAND, create_command("ULOZ", "Uložíť stav rozohratej hry na disk.", "ULOZ|SAVE (.*)?", 2));
-    create_container(first, COMMAND, create_command("NAHRAJ", "Nahrať uloženú hru z disku.", "NAHRAJ|LOAD (.*)?", 2));
-
     ASSERT(first != NULL);
-    
+
     new->commands = first;
     new->history = NULL;
 
@@ -103,6 +115,7 @@ struct command *parse_input(struct parser *parser, char *input)
     CHECK_NULL(parser);
     CHECK_NULL(input);
 
+    // remove whitespace
     input = trim(input);
 
     // list trough available commands

@@ -27,7 +27,7 @@
 
 struct container *create_world()
 {
-    // TODO contemplate whether it wouldn't be better to separate world into individual .txt files
+    // TODO complete game scenario with populating world, rooms & items
 
     struct room *home = create_room("home",
                                     "Nachadzas sa v chyzi svarneho suhaja. Na vychode sa nachadzaju dvere veduce z chyze von.");
@@ -41,6 +41,9 @@ struct container *create_world()
     add_room_to_world(world, garden);
 
     // TODO place items
+    struct item *key = create_item("key", "Kluc od domu.", MOVABLE | EXAMINABLE | USABLE);
+
+    add_item_to_room(get_room(world, "home"), key);
 
     return world;
 }
