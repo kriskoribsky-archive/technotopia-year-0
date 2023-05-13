@@ -1,8 +1,58 @@
 #include <assert.h>
 #include <stdlib.h>
-#include "../utils/src/macroutils.h"
 
 #include "backpack.h"
+
+#ifdef DEBUG
+#include <assert.h>
+#define ASSERT(expr) assert(expr)
+#else
+#define ASSERT(expr) ((void)0)
+#endif
+
+#define MALLOC(nmemb, ptr)                          \
+    {                                               \
+        (ptr) = malloc((nmemb) * (sizeof(*(ptr)))); \
+        assert((ptr) != NULL);                      \
+    }
+
+#define FREE(ptr)     \
+    {                 \
+        free(ptr);    \
+        (ptr) = NULL; \
+    }
+
+#define CHECK_NULL(ptr)    \
+    {                      \
+        if ((ptr) == NULL) \
+        {                  \
+            return NULL;   \
+        }                  \
+    }
+
+#define CHECK_NULL_FALSE(ptr) \
+    {                         \
+        if ((ptr) == NULL)    \
+        {                     \
+            return false;     \
+        }                     \
+    }
+
+#define CHECK_NULL_VOID(ptr) \
+    {                        \
+        if ((ptr) == NULL)   \
+        {                    \
+            return;          \
+        }                    \
+    }
+
+#define CHECK_EMPTY(s)    \
+    {                     \
+        if ((*s) == '\0') \
+        {                 \
+            return NULL;  \
+        }                 \
+    }
 
 struct backpack *create_backpack(const int capacity)
 {
