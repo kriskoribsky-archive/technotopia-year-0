@@ -63,8 +63,8 @@ struct container *create_container(struct container *first, enum container_type 
         new->command = (struct command *)entry;
         break;
 
-    case TEXT: // FIX why isn't TEXT type used anywhere?
-        new->text = strdup((char *)entry);
+    case TEXT:
+        new->text = (char *)entry; // container's responsibility isn't allocating memory
         break;
     }
 
@@ -166,7 +166,7 @@ struct container *remove_container(struct container *first, void *entry)
             break;
 
         case TEXT:
-            identical = strcmp((*next)->text, (char *)entry) == 0 ? true : false;
+            identical = (*next)->text == (char *)entry;
             break;
         }
 

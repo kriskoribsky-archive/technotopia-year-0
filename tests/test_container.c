@@ -1,3 +1,6 @@
+#define _POSIX_C_SOURCE 200809L
+#include <stdlib.h>
+#include <string.h>
 #include "../unity/src/unity.h"
 
 #include "container.h"
@@ -35,6 +38,8 @@ void test_remove_container_returns_null_on_last_entry(void);
 void test_remove_container_content_of_container_stays(void);
 void test_remove_container_returns_null_on_null_first(void);
 void test_remove_container_returns_first_on_null_entry(void);
+
+#define TEXT_LEN 32
 
 struct container *c = NULL;
 
@@ -105,14 +110,14 @@ void test_create_container_works_for_type_command(void)
 
 void test_create_container_works_for_type_text(void)
 {
-    c = create_container(NULL, TEXT, "tesad");
+    c = create_container(NULL, TEXT, strdup("text"));
     TEST_ASSERT_EQUAL(TEXT, c->type);
 }
 
 void test_create_container_doesnt_set_first_implicitly(void)
 {
     c = NULL;
-    create_container(c, TEXT, "test");
+    create_container(c, TEXT, strdup("text"));
     TEST_ASSERT_NULL(c);
 }
 
@@ -124,16 +129,16 @@ void test_create_container_returns_null_on_null_entry(void)
 
 void test_create_container_returns_null_on_different_entry_type(void)
 {
-    c = create_container(NULL, TEXT, "test text");
+    c = create_container(NULL, TEXT, strdup("text"));
     TEST_ASSERT_NULL(create_container(c, ROOM, create_room("room_name", "room_description")));
 }
 
 void test_create_container_appends_entry_on_same_entry_type(void)
 {
-    c = create_container(NULL, TEXT, "test text 1");
-    create_container(c, TEXT, "test text 2");
-    create_container(c, TEXT, "test text 3");
-    create_container(c, TEXT, "test text 4");
+    c = create_container(NULL, TEXT, strdup("test text 1"));
+    create_container(c, TEXT, strdup("test text 2"));
+    create_container(c, TEXT, strdup("test text 3"));
+    create_container(c, TEXT, strdup("test text 4"));
 
     TEST_ASSERT_EQUAL_STRING("test text 1", c->text);
     TEST_ASSERT_EQUAL_STRING("test text 2", c->next->text);
@@ -148,7 +153,9 @@ void test_destroy_containers_handles_null_input(void)
 
 void test_destroy_containers_sets_pointer_to_null(void)
 {
-    struct container *local = create_container(NULL, TEXT, "test");
+    char *text1 = malloc(TEXT_LEN * sizeof(char));
+
+    struct container *local = create_container(NULL, TEXT, strdup("test"));
 
     local = destroy_containers(local);
 
@@ -202,17 +209,17 @@ void test_get_from_container_by_name_works_for_type_command(void)
 
 void test_get_from_container_by_name_works_for_type_text(void)
 {
-    char *target_text = "text 5";
+    char *text5 = strdup("text 5");
 
-    c = create_container(NULL, TEXT, "text 1");
-    create_container(c, TEXT, "text 2");
-    create_container(c, TEXT, "text 3");
-    create_container(c, TEXT, "text 4");
-    create_container(c, TEXT, target_text);
+    c = create_container(NULL, TEXT, strdup("text 1"));
+    create_container(c, TEXT, strdup("text 2"));
+    create_container(c, TEXT, strdup("text 3"));
+    create_container(c, TEXT, strdup("text 4"));
+    create_container(c, TEXT, text5);
 
-    // equal memory, not pointer
-    TEST_ASSERT_NOT_EQUAL(target_text, get_from_container_by_name(c, "text 5"));
-    TEST_ASSERT_EQUAL_MEMORY(target_text, get_from_container_by_name(c, "text 5"), 7 * sizeof(char));
+    // equal pointer & memory
+    TEST_ASSERT_EQUAL_PTR(text5, get_from_container_by_name(c, "text 5"));
+    TEST_ASSERT_EQUAL_MEMORY(text5, get_from_container_by_name(c, "text 5"), 7 * sizeof(char));
 }
 
 void test_get_from_container_by_name_returns_null_on_null_container(void)
@@ -222,17 +229,18 @@ void test_get_from_container_by_name_returns_null_on_null_container(void)
 
 void test_get_from_container_by_name_returns_null_on_null_name(void)
 {
-    c = create_container(NULL, TEXT, "test");
+
+    c = create_container(NULL, TEXT, strdup("test"));
     TEST_ASSERT_NULL(get_from_container_by_name(c, NULL));
 }
 
 void test_get_from_container_by_name_returns_null_on_invalid_name(void)
 {
-    c = create_container(NULL, TEXT, "text 1");
-    create_container(c, TEXT, "text 2");
-    create_container(c, TEXT, "text 3");
-    create_container(c, TEXT, "text 4");
-    create_container(c, TEXT, "text 5");
+    c = create_container(NULL, TEXT, strdup("text 1"));
+    create_container(c, TEXT, strdup("text 2"));
+    create_container(c, TEXT, strdup("text 3"));
+    create_container(c, TEXT, strdup("text 4"));
+    create_container(c, TEXT, strdup("text 5"));
 
     TEST_ASSERT_NULL(get_from_container_by_name(c, "text 69"));
 }
@@ -248,7 +256,7 @@ void test_remove_container_works_for_type_room(void)
     create_container(c, ROOM, next_room);
     create_container(c, ROOM, create_room("room 5", "room desc 5"));
 
-    // test pointer equality before & after also memory equality
+    // test pointer & memory equality
     TEST_ASSERT_NOT_EQUAL(next_room, c->next->next->room);
     TEST_ASSERT_NOT_EQUAL(target_room, remove_container(c, target_room)->next->next->room);
     TEST_ASSERT_EQUAL_PTR(next_room, c->next->next->room);
@@ -266,7 +274,7 @@ void test_remove_container_works_for_type_item(void)
     create_container(c, ITEM, create_item("item 4", "item desc 4", 0));
     create_container(c, ITEM, create_item("item 5", "item desc 5", 0));
 
-    // test pointer equality before & after also memory equality
+    // test pointer & memory equality
     TEST_ASSERT_NOT_EQUAL(next_item, c->next->item);
     TEST_ASSERT_NOT_EQUAL(target_item, remove_container(c, target_item)->next->item);
     TEST_ASSERT_EQUAL_PTR(next_item, c->next->item);
@@ -284,7 +292,7 @@ void test_remove_container_works_for_type_command(void)
     create_container(c, COMMAND, create_command("cmd 4", "cmd desc 4", "dummy 4", 1));
     create_container(c, COMMAND, create_command("cmd 3", "cmd desc 3", "dummy 5", 1));
 
-    // test pointer equality before & after also memory equality
+    // test pointer & memory equality
     TEST_ASSERT_NOT_EQUAL(next_command, c->next->command);
     TEST_ASSERT_NOT_EQUAL(target_command, remove_container(c, target_command)->next->command);
     TEST_ASSERT_EQUAL_PTR(next_command, c->next->command);
@@ -293,19 +301,20 @@ void test_remove_container_works_for_type_command(void)
 
 void test_remove_container_works_for_type_text(void)
 {
-    char *target_text = "text 3";
-    char *next_text = "text 5";
+    char *text3 = strdup("text 3");
+    char *text5 = strdup("text 5");
 
-    c = create_container(NULL, TEXT, "text 1");
-    create_container(c, TEXT, "text 2");
-    create_container(c, TEXT, target_text);
-    create_container(c, TEXT, "text 4");
-    create_container(c, TEXT, next_text);
+    c = create_container(NULL, TEXT, strdup("text 1"));
+    create_container(c, TEXT, strdup("text 2"));
+    create_container(c, TEXT, text3);
+    create_container(c, TEXT, strdup("text 4"));
+    create_container(c, TEXT, text5);
 
-    // pointers should be always inequal in case of text
-    TEST_ASSERT_NOT_EQUAL(target_text, c->next->next->text);
-    TEST_ASSERT_NOT_EQUAL(next_text, c->next->next->next->next->text);
-    TEST_ASSERT_EQUAL_STRING(next_text, remove_container(c, target_text)->next->next->next->text);
+    // test pointer & memory equality
+    TEST_ASSERT_NOT_EQUAL(text5, c->next->next->next->text);
+    TEST_ASSERT_NOT_EQUAL(text3, remove_container(c, text3)->next->text);
+    TEST_ASSERT_EQUAL_PTR(text5, c->next->next->next->text);
+    TEST_ASSERT_EQUAL_MEMORY(text5, c->next->next->next->text, 7 * sizeof(char));
 }
 
 void test_remove_container_doesnt_set_first_implicitly(void)

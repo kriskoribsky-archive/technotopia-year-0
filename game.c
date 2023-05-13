@@ -141,7 +141,7 @@ void execute_command(struct game *game, struct command *command)
         }                                      \
     }
 {
-    ASSERT(game != NULL && command != NULL);
+    ASSERT(game != NULL);
     if (game == NULL || command == NULL)
     {
         return;

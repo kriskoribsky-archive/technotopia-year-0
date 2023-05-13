@@ -41,6 +41,7 @@ struct command *create_command(char *name, char *description, char *pattern, siz
 {
     CHECK_NULL(name);
     CHECK_NULL(description);
+    CHECK_NULL(pattern);
 
     struct command *new;
     MALLOC(1, new);
