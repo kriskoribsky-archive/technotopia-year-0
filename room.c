@@ -33,10 +33,28 @@
         }                  \
     }
 
+#define CHECK_NULL_VOID(ptr) \
+    {                        \
+        if ((ptr) == NULL)   \
+        {                    \
+            return;          \
+        }                    \
+    }
+
+#define CHECK_EMPTY(s)    \
+    {                     \
+        if ((*s) == '\0') \
+        {                 \
+            return NULL;  \
+        }                 \
+    }
+
 struct room *create_room(char *name, char *description)
 {
     CHECK_NULL(name);
     CHECK_NULL(description);
+    CHECK_EMPTY(name);
+    CHECK_EMPTY(description);
 
     struct room *new;
     MALLOC(1, new);
@@ -66,6 +84,7 @@ struct room *destroy_room(struct room *room)
 void set_exits_from_room(struct room *room, struct room *north, struct room *south, struct room *east, struct room *west)
 {
     ASSERT(room != NULL);
+    CHECK_NULL_VOID(room);
 
     room->north = north;
     room->south = south;
@@ -76,8 +95,8 @@ void set_exits_from_room(struct room *room, struct room *north, struct room *sou
 void show_room(const struct room *room)
 {
     ASSERT(room != NULL);
+    CHECK_NULL_VOID(room);
 
-    // intro
     printf("%s\n", room->name);
     printf("%s\n", room->description);
 }
@@ -85,17 +104,26 @@ void show_room(const struct room *room)
 void delete_item_from_room(struct room *room, struct item *item)
 {
     ASSERT(room != NULL && item != NULL);
+    CHECK_NULL_VOID(room);
+    CHECK_NULL_VOID(item);
+
     room->items = remove_container(room->items, item);
 }
 
 void add_item_to_room(struct room *room, struct item *item)
 {
     ASSERT(room != NULL && item != NULL);
+    CHECK_NULL_VOID(room);
+    CHECK_NULL_VOID(item);
+
     room->items = create_container(room->items, ITEM, item);
 }
 
 struct item *get_item_from_room(const struct room *room, const char *name)
 {
     ASSERT(room != NULL && name != NULL);
+    CHECK_NULL(room);
+    CHECK_EMPTY(name);
+
     return get_from_container_by_name(room->items, name);
 }

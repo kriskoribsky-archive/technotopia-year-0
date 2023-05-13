@@ -32,10 +32,20 @@
         }                  \
     }
 
+#define CHECK_EMPTY(s)    \
+    {                     \
+        if ((*s) == '\0') \
+        {                 \
+            return NULL;  \
+        }                 \
+    }
+
 struct item *create_item(char *name, char *description, unsigned int properties)
 {
     CHECK_NULL(name);
     CHECK_NULL(description);
+    CHECK_EMPTY(name);
+    CHECK_EMPTY(description);
 
     struct item *new;
     MALLOC(1, new);

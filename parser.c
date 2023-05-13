@@ -37,6 +37,14 @@
         }                  \
     }
 
+#define CHECK_EMPTY(s)    \
+    {                     \
+        if ((*s) == '\0') \
+        {                 \
+            return NULL;  \
+        }                 \
+    }
+
 #define REG_MATCH 0
 #define ERROR_BUFFER_SIZE 256
 
