@@ -89,7 +89,7 @@ struct parser *create_parser()
 
     // create container list out of commands
     struct container *first = create_container(NULL, COMMAND, commands[0]);
-    for (int i = 1; i < ARRAY_SIZE(commands); i++)
+    for (size_t i = 1; i < ARRAY_SIZE(commands); i++)
     {
         create_container(first, COMMAND, commands[i]);
     }
