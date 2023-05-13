@@ -78,41 +78,8 @@ void show_room(const struct room *room)
     ASSERT(room != NULL);
 
     // intro
-    printf("\nMiestnosť:\n");
     printf("%s\n", room->name);
-    printf("------------------------------------\n");
-
-    printf("\n");
     printf("%s\n", room->description);
-
-    // items
-    if (room->items)
-    {
-        printf("Predmety v miestnosti:\n");
-        for (struct container *current = room->items; current != NULL; current = current->next)
-        {
-            printf("\t%s\n", current->item->name);
-        }
-    }
-
-    // exits
-    printf("Možné východy z miestnosti:\n");
-    if (room->north)
-    {
-        printf("\tSever -> %s\n", room->north->name);
-    }
-    if (room->south)
-    {
-        printf("\tJuh -> %s\n", room->south->name);
-    }
-    if (room->east)
-    {
-        printf("\tVýchod -> %s\n", room->east->name);
-    }
-    if (room->west)
-    {
-        printf("\tZápad -> %s\n", room->west->name);
-    }
 }
 
 void delete_item_from_room(struct room *room, struct item *item)

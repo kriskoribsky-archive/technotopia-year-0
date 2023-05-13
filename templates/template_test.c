@@ -1,0 +1,1 @@
+/home/kk/tuke/prog/layout/templates/template_test.c

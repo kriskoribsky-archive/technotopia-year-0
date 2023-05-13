@@ -35,6 +35,7 @@
     }
 
 // game info
+#define NAME "TECHNOTOPIA: YEAR 0"
 #define VERSION "1.0.0"
 #define AUTHOR "Kristian Koribsky"
 #define CONTACT "kristian.koribsky@student.tuke.sk | kriskoribsky.me"
@@ -42,17 +43,29 @@
 // game settings
 #define BACKPACK_CAPACITY 5
 
-/**
- * Search for the item in the game's current room or backpack
- *
- * Finds and returns a pointer to the item in the game identified by it's name
- * Name is case insensitive. If such item doesn't exist in the game, NULL is
- * returned. The item itself remains in the game.
- * @param game game to search item in, first tries to search in room, then in backpack
- * @param name name of item to search for
- * @return Returns reference to the found item or NULL if item was not found.
- */
-struct item *get_item_from_game(const struct game *game, char *name);
+// commands
+void command_inspect(struct game *game, struct command *command);
+void command_take(struct game *game, struct command *command);
+void command_put(struct game *game, struct command *command);
+void command_use(struct game *game, struct command *command);
+
+void command_look(struct game *game, struct command *command);
+void command_inventory(struct game *game, struct command *command);
+
+void command_north(struct game *game, struct command *command);
+void command_south(struct game *game, struct command *command);
+void command_east(struct game *game, struct command *command);
+void command_west(struct game *game, struct command *command);
+
+void command_about(struct game *game, struct command *command);
+void command_commands(struct game *game, struct command *command);
+void command_version(struct game *game, struct command *command);
+
+void command_quit(struct game *game, struct command *command);
+void command_restart(struct game *game, struct command *command);
+
+void command_save(struct game *game, struct command *command);
+void command_load(struct game *game, struct command *command);
 
 void play_game(struct game *game)
 {
@@ -63,12 +76,13 @@ void play_game(struct game *game)
     struct room *previous_room = NULL;
 
     // game loop
-    do
+    while (game->state == PLAYING)
     {
         // render
         if (game->current_room != previous_room)
         {
             show_room(game->current_room);
+            previous_room = game->current_room;
         }
 
         // input
@@ -81,8 +95,7 @@ void play_game(struct game *game)
 
         // update
         execute_command(game, parse_input(game->parser, input));
-
-    } while (game->state == PLAYING);
+    }
 
     // TODO implement other game states
 }
@@ -120,7 +133,13 @@ struct game *destroy_game(struct game *game)
 }
 
 void execute_command(struct game *game, struct command *command)
-#define IS_COMMAND(target) (strcmp(command->name, (target)) == 0)
+#define REGISTER_COMMAND(cmd, callback)        \
+    {                                          \
+        if (strcmp(command->name, (cmd)) == 0) \
+        {                                      \
+            return callback(game, command);    \
+        }                                      \
+    }
 {
     ASSERT(game != NULL && command != NULL);
     if (game == NULL || command == NULL)
@@ -128,191 +147,233 @@ void execute_command(struct game *game, struct command *command)
         return;
     }
 
-    if (IS_COMMAND("PRESKUMAJ"))
-    {
-        char *name;
-        struct item *item;
+    REGISTER_COMMAND("PRESKUMAJ", command_inspect);
+    REGISTER_COMMAND("VEZMI", command_take);
+    REGISTER_COMMAND("POLOZ", command_put);
+    REGISTER_COMMAND("POUZI", command_use);
 
-        if ((name = command->groups[1]) == NULL)
-        {
-            printf("Neviem, co chces preskumat.\n");
-        }
-        else if ((item = get_item_from_game(game, name)) == NULL)
+    REGISTER_COMMAND("ROZHLIADNI SA", command_look);
+    REGISTER_COMMAND("INVENTAR", command_inventory);
+
+    REGISTER_COMMAND("SEVER", command_north);
+    REGISTER_COMMAND("JUH", command_south);
+    REGISTER_COMMAND("VYCHOD", command_east);
+    REGISTER_COMMAND("ZAPAD", command_west);
+
+    REGISTER_COMMAND("O HRE", command_about);
+    REGISTER_COMMAND("PRIKAZY", command_commands);
+    REGISTER_COMMAND("VERZIA", command_version);
+
+    REGISTER_COMMAND("KONIEC", command_quit);
+    REGISTER_COMMAND("RESTART", command_restart);
+
+    REGISTER_COMMAND("ULOZ", command_save);
+    REGISTER_COMMAND("NAHRAJ", command_load);
+
+    // command created, but not implemented (programming exception)
+    fprintf(stderr, "Error! Command '%s' not implemented.\n", command->name);
+    exit(EXIT_FAILURE);
+
+#undef REGISTER_COMMAND
+}
+
+void command_inspect(struct game *game, struct command *command)
+{
+    char *name;
+    struct item *item;
+
+    if ((name = command->groups[1]) == NULL)
+    {
+        printf("Neviem, co chces preskumat.\n");
+        return;
+    }
+    if ((item = get_item_from_room(game->current_room, name)) == NULL)
+    {
+        if ((item = get_item_from_backpack(game->backpack, name)) == NULL)
         {
             printf("Predmet ktory chces preskumat sa nenachadza v miestnosti ani v batohu.\n");
-        }
-        else
-        {
-            if (~(item->properties & EXAMINABLE))
-            {
-                printf("Predmet sa neda preskumat.\n");
-            }
-            else
-            {
-                printf("Predmet %s:\n", item->name);
-                printf("\t%s\n", item->description);
-            }
+            return;
         }
     }
-    else if (IS_COMMAND("VEZMI"))
+    if (~(item->properties & EXAMINABLE))
     {
-        char *name;
-        struct item *item;
-
-        if ((name = command->groups[1]) == NULL)
-        {
-            printf("Neviem, co chces vziat.\n");
-        }
-        else if ((item = get_item_from_room(game->current_room, name)) == NULL)
-        {
-            printf("Predmet ktory chces vziat sa nenachadza v miestnosti.\n");
-        }
-        else
-        {
-            if (add_item_to_backpack(game->backpack, item) == false)
-            {
-                printf("Batoh je plny alebo predmet sa neda presuvat.\n");
-            }
-            else
-            {
-                delete_item_from_room(game->current_room, item);
-            }
-        }
-    }
-    else if (IS_COMMAND("POLOZ"))
-    {
-        char *name;
-        struct item *item;
-
-        if ((name = command->groups[1]) == NULL)
-        {
-            printf("Neviem, co chces polozit.\n");
-        }
-        else if ((item = get_item_from_backpack(game->backpack, name)) == NULL)
-        {
-            printf("Predmet ktory chces polozit sa nenachadza v tvojom batohu.\n");
-        }
-        else
-        {
-            add_item_to_room(game->current_room, item);
-            delete_item_from_backpack(game->backpack, item);
-        }
-    }
-    // TODO implement pouzi
-    else if (IS_COMMAND("POUZI"))
-    {
+        printf("Predmet sa neda preskumat.\n");
+        return;
     }
 
-    else if (IS_COMMAND("ROZHLIADNI SA"))
+    printf("Predmet %s:\n", item->name);
+    printf("\t%s\n", item->description);
+}
+
+void command_take(struct game *game, struct command *command)
+{
+    char *name;
+    struct item *item;
+
+    if ((name = command->groups[1]) == NULL)
     {
-        show_room(game->current_room);
+        printf("Neviem, co chces vziat.\n");
+        return;
     }
-    else if (IS_COMMAND("INVENTAR"))
+    if ((item = get_item_from_room(game->current_room, name)) == NULL)
     {
-        printf("Predmety v batohu:\n");
-        for (struct container *current = game->backpack->items; current != NULL; current = current->next)
+        printf("Predmet ktory chces vziat sa nenachadza v miestnosti.\n");
+        return;
+    }
+    if (add_item_to_backpack(game->backpack, item) == false)
+    {
+        printf("Batoh je plny alebo predmet sa neda presuvat.\n");
+        return;
+    }
+
+    delete_item_from_room(game->current_room, item);
+}
+
+void command_put(struct game *game, struct command *command)
+{
+    char *name;
+    struct item *item;
+
+    if ((name = command->groups[1]) == NULL)
+    {
+        printf("Neviem, co chces polozit.\n");
+        return;
+    }
+    if ((item = get_item_from_backpack(game->backpack, name)) == NULL)
+    {
+        printf("Predmet ktory chces polozit sa nenachadza v tvojom batohu.\n");
+        return;
+    }
+
+    add_item_to_room(game->current_room, item);
+    delete_item_from_backpack(game->backpack, item);
+}
+
+void command_use(struct game *game, struct command *command)
+{
+}
+
+void command_look(struct game *game, struct command *command)
+{
+    // show items
+    if (game->current_room->items)
+    {
+        printf("Predmety v tvojej blizkosti:\n");
+        for (struct container *current = game->current_room->items; current != NULL; current = current->next)
         {
             printf("\t%s\n", current->item->name);
         }
     }
 
-    else if (IS_COMMAND("SEVER"))
+    // exits
+    printf("Možné východy z miestnosti:\n");
+    if (game->current_room->north)
     {
-        if (game->current_room->north == NULL)
-        {
-            printf("Smerom na sever nevedie ziadna cesta.\n");
-        }
-        else
-        {
-            game->current_room = game->current_room->north;
-        }
+        printf("\tSever -> %s\n", game->current_room->north->name);
     }
-    else if (IS_COMMAND("JUH"))
+    if (game->current_room->south)
     {
-        if (game->current_room->south == NULL)
-        {
-            printf("Smerom na juh nevedie ziadna cesta.\n");
-        }
-        else
-        {
-            game->current_room = game->current_room->south;
-        }
+        printf("\tJuh -> %s\n", game->current_room->south->name);
     }
-    else if (IS_COMMAND("VYCHOD"))
+    if (game->current_room->east)
     {
-        if (game->current_room->east == NULL)
-        {
-            printf("Smerom na vychod nevedie ziadna cesta.\n");
-        }
-        else
-        {
-            game->current_room = game->current_room->east;
-        }
+        printf("\tVýchod -> %s\n", game->current_room->east->name);
     }
-    else if (IS_COMMAND("ZAPAD"))
+    if (game->current_room->west)
     {
-        if (game->current_room->west == NULL)
-        {
-            printf("Smerom na zapad nevedie ziadna cesta.\n");
-        }
-        else
-        {
-            game->current_room = game->current_room->west;
-        }
+        printf("\tZápad -> %s\n", game->current_room->west->name);
     }
-
-    else if (IS_COMMAND("O HRE"))
-    {
-        printf("Kde bolo tam bolo, ...\n");
-    }
-    else if (IS_COMMAND("PRIKAZY"))
-    {
-        printf("Prikazy:\n");
-        for (struct container *current = game->parser->commands; current != NULL; current = current->next)
-        {
-            printf("\t%s\t->\t%s\n", current->command->name, current->command->description);
-        }
-    }
-    else if (IS_COMMAND("VERZIA"))
-    {
-        printf("Hotel Transylvania.\n");
-        printf("Od strachu sa vam budu jezit chlpy na chrbte, muhahhaa!\n");
-        printf("============================================================\n");
-        printf("Verzia: %s\n", VERSION);
-        printf("Autor: %s\n", AUTHOR);
-        printf("Kontakt: %s\n", CONTACT);
-    }
-
-    else if (IS_COMMAND("KONIEC"))
-    {
-        game->state = GAMEOVER;
-    }
-    else if (IS_COMMAND("RESTART"))
-    {
-        game->state = RESTART;
-    }
-
-    // TODO lastly implement game saving
-    else if (IS_COMMAND("ULOZ"))
-    {
-    }
-    else if (IS_COMMAND("NAHRAJ"))
-    {
-    }
-    else
-    {
-        fprintf(stderr, "Error! Command '%s' not implemented.\n", command->name);
-        exit(EXIT_FAILURE);
-    }
-#undef IS_COMMAND
 }
 
-struct item *get_item_from_game(const struct game *game, char *name)
+void command_inventory(struct game *game, struct command *command)
 {
-    ASSERT(game != NULL && name != NULL);
-    CHECK_NULL(game);
-    CHECK_NULL(name);
+    printf("Predmety v batohu:\n");
+    for (struct container *current = game->backpack->items; current != NULL; current = current->next)
+    {
+        printf("\t%s\n", current->item->name);
+    }
+}
 
-    struct item *item;
-    return (item = get_item_from_room(game->current_room, name)) != NULL ? item : get_item_from_backpack(game->backpack, name);
+void command_north(struct game *game, struct command *command)
+{
+    if (game->current_room->north == NULL)
+    {
+        printf("Smerom na sever nevedie ziadna cesta.\n");
+        return;
+    }
+
+    game->current_room = game->current_room->north;
+}
+
+void command_south(struct game *game, struct command *command)
+{
+    if (game->current_room->south == NULL)
+    {
+        printf("Smerom na juh nevedie ziadna cesta.\n");
+        return;
+    }
+
+    game->current_room = game->current_room->south;
+}
+void command_east(struct game *game, struct command *command)
+{
+    if (game->current_room->east == NULL)
+    {
+        printf("Smerom na vychod nevedie ziadna cesta.\n");
+        return;
+    }
+
+    game->current_room = game->current_room->east;
+}
+
+void command_west(struct game *game, struct command *command)
+{
+    if (game->current_room->west == NULL)
+    {
+        printf("Smerom na zapad nevedie ziadna cesta.\n");
+        return;
+    }
+
+    game->current_room = game->current_room->west;
+}
+
+void command_about(struct game *game, struct command *command)
+{
+    printf("Kde bolo tam bolo, ...\n");
+}
+
+void command_commands(struct game *game, struct command *command)
+{
+    printf("Prikazy:\n");
+    for (struct container *current = game->parser->commands; current != NULL; current = current->next)
+    {
+        printf("\t%s\t->\t%s\n", current->command->name, current->command->description);
+    }
+}
+
+void command_version(struct game *game, struct command *command)
+{
+    printf("%s\n", NAME);
+    printf("\n");
+    printf("============================================================\n");
+    printf("Version: %s\n", VERSION);
+    printf("Author: %s\n", AUTHOR);
+    printf("Contact: %s\n", CONTACT);
+}
+
+void command_quit(struct game *game, struct command *command)
+{
+    game->state = GAMEOVER;
+}
+
+void command_restart(struct game *game, struct command *command)
+{
+    game->state = RESTART;
+}
+
+void command_save(struct game *game, struct command *command)
+{
+}
+void command_load(struct game *game, struct command *command)
+{
 }

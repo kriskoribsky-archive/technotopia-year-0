@@ -1,34 +1,8 @@
 #include <assert.h>
 #include <stdlib.h>
+#include "../utils/src/macroutils.h"
 
 #include "backpack.h"
-
-#ifdef DEBUG
-#include <assert.h>
-#define ASSERT(expr) assert(expr)
-#else
-#define ASSERT(expr) ((void)0)
-#endif
-
-#define MALLOC(nmemb, ptr)                          \
-    {                                               \
-        (ptr) = malloc((nmemb) * (sizeof(*(ptr)))); \
-        assert((ptr) != NULL);                      \
-    }
-
-#define FREE(ptr)     \
-    {                 \
-        free(ptr);    \
-        (ptr) = NULL; \
-    }
-
-#define CHECK_NULL(ptr)    \
-    {                      \
-        if ((ptr) == NULL) \
-        {                  \
-            return NULL;   \
-        }                  \
-    }
 
 struct backpack *create_backpack(const int capacity)
 {
@@ -55,6 +29,8 @@ struct backpack *destroy_backpack(struct backpack *backpack)
 bool add_item_to_backpack(struct backpack *backpack, struct item *item)
 {
     ASSERT(backpack != NULL && item != NULL);
+    CHECK_NULL_FALSE(backpack);
+    CHECK_NULL_FALSE(item);
 
     if ((item->properties & MOVABLE) && (backpack->size + 1 <= backpack->capacity))
     {
@@ -62,12 +38,16 @@ bool add_item_to_backpack(struct backpack *backpack, struct item *item)
         backpack->size++;
         return true;
     }
+
     return false;
 }
 
 void delete_item_from_backpack(struct backpack *backpack, struct item *item)
 {
     ASSERT(backpack != NULL && item != NULL);
+    CHECK_NULL_VOID(backpack);
+    CHECK_NULL_VOID(item);
+
     backpack->items = remove_container(backpack->items, item);
     backpack->size--;
 }
@@ -75,5 +55,8 @@ void delete_item_from_backpack(struct backpack *backpack, struct item *item)
 struct item *get_item_from_backpack(const struct backpack *backpack, char *name)
 {
     ASSERT(backpack != NULL && name != NULL);
+    CHECK_NULL(backpack);
+    CHECK_NULL(name);
+
     return get_from_container_by_name(backpack->items, name);
 }

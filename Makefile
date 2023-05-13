@@ -110,7 +110,7 @@ endif
 
 ifdef run
 	MAKEFLAGS   		+= --always-make
-	RUN					= ./$@
+	RUN					= ./$@ || true
 endif
 
 
@@ -155,9 +155,9 @@ DIR_BIN			:= build/bin/
 DIR_DEP			:= build/dep/
 DIR_OBJ			:= build/obj/
 DIR_TST			:= build/tests/
-DIR_OUT			:= build/tests/out/
+DIR_TSC			:= build/tests/testcases/
 
-BUILD_DIRS		:= $(DIR_BLD) $(DIR_BIN) $(DIR_DEP) $(DIR_OBJ) $(DIR_TST) $(DIR_OUT)
+BUILD_DIRS		:= $(DIR_BLD) $(DIR_BIN) $(DIR_DEP) $(DIR_OBJ) $(DIR_TST) $(DIR_TSC)
 
 # Files
 MAIN			?= main.c

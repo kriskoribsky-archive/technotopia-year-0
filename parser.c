@@ -61,9 +61,9 @@ struct parser *create_parser()
             create_command("POUZI", "Použiť predmet z batohu alebo miestnosti.", "POUZI|USE (.*)", 2),
 
             create_command("ROZHLIADNI SA", "Informácie o miestnosti.", "ROZHLIADNI SA|LOOK", 1),
-            create_command("INVENTAR", "Zobrazíť obsah batohu.", "INVENTAR|INVENTORY|I", 1),
+            create_command("INVENTAR", "Zobrazíť obsah batohu.", "^(INVENTAR|INVENTORY|I)$", 2),
 
-            create_command("SEVER", "Ísť smerom na sever od aktuálnej pozície.", "SEVER|S", 1),
+            create_command("SEVER", "Ísť smerom na sever od aktuálnej pozície.", "^(SEVER|S)$", 2),
             create_command("JUH", "Ísť smerom na juh od aktuálnej pozície.", "JUH|J", 1),
             create_command("VYCHOD", "Ísť smerom na východ od aktuálnej pozície.", "VYCHOD|V", 1),
             create_command("ZAPAD", "Ísť smerom na západ od aktuálnej pozície.", "ZAPAD|Z", 1),
@@ -80,9 +80,8 @@ struct parser *create_parser()
         };
 
     // create container list out of commands
-    int n = ARRAY_SIZE(commands);
     struct container *first = create_container(NULL, COMMAND, commands[0]);
-    for (int i = 1; i < n; i++)
+    for (int i = 1; i < ARRAY_SIZE(commands); i++)
     {
         create_container(first, COMMAND, commands[i]);
     }

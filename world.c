@@ -28,6 +28,12 @@
 struct container *create_world()
 {
     // TODO complete game scenario with populating world, rooms & items
+    // struct room *rooms[] =
+    // {
+
+    // }
+    
+
 
     struct room *home = create_room("home",
                                     "Nachadzas sa v chyzi svarneho suhaja. Na vychode sa nachadzaju dvere veduce z chyze von.");
