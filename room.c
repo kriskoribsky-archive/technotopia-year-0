@@ -1,4 +1,4 @@
-#define _POSIX_C_SOURCE 200809L
+#define _POSIX_C_SOURCE 200809L // strdup
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -116,7 +116,8 @@ void add_item_to_room(struct room *room, struct item *item)
     CHECK_NULL_VOID(room);
     CHECK_NULL_VOID(item);
 
-    room->items = create_container(room->items, ITEM, item);
+    struct container *c = create_container(room->items, ITEM, item);
+    room->items = room->items != NULL ? room->items : c;
 }
 
 struct item *get_item_from_room(const struct room *room, const char *name)

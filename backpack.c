@@ -84,7 +84,8 @@ bool add_item_to_backpack(struct backpack *backpack, struct item *item)
 
     if ((item->properties & MOVABLE) && (backpack->size + 1 <= backpack->capacity))
     {
-        backpack->items = create_container(backpack->items, ITEM, item);
+        struct container *c = create_container(backpack->items, ITEM, item);
+        backpack->items = backpack->items != NULL ? backpack->items : c;
         backpack->size++;
         return true;
     }

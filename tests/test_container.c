@@ -1,4 +1,4 @@
-#define _POSIX_C_SOURCE 200809L
+#define _POSIX_C_SOURCE 200809L // strdup
 #include <stdlib.h>
 #include <string.h>
 #include "../unity/src/unity.h"

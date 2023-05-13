@@ -1,4 +1,4 @@
-#define _POSIX_C_SOURCE 200809L
+#define _POSIX_C_SOURCE 200809L // strdup
 #include <assert.h>
 #include <ctype.h>
 #include <stdio.h>
@@ -63,10 +63,10 @@ struct parser *create_parser()
     // predefine commands
     struct command *commands[] =
         {
-            create_command("PRESKUMAJ", "Opis predmetu v batohu/miestnosti.", "^(PRESKUMAJ|SEARCH)( .*)?$", 3),
-            create_command("VEZMI", "Vložíť predmet z miestnosti do batohu.", "^(VEZMI|TAKE)( .*)?$", 3),
-            create_command("POLOZ", "Položíť predmet z batohu do miestnosti.", "^(POLOZ|PUT)( .*)?$", 3),
-            create_command("POUZI", "Použiť predmet z batohu alebo miestnosti.", "^(POUZI|USE)( .*)?$", 3),
+            create_command("PRESKUMAJ", "Opis predmetu v batohu/miestnosti.", "^(PRESKUMAJ|SEARCH)( (.*))?$", 4),
+            create_command("VEZMI", "Vložíť predmet z miestnosti do batohu.", "^(VEZMI|TAKE)( (.*))?$", 4),
+            create_command("POLOZ", "Položíť predmet z batohu do miestnosti.", "^(POLOZ|PUT)( (.*))?$", 4),
+            create_command("POUZI", "Použiť predmet z batohu alebo miestnosti.", "^(POUZI|USE)( (.*))?$", 4),
 
             create_command("ROZHLIADNI SA", "Informácie o miestnosti.", "^(ROZHLIADNI SA|LOOK)$", 2),
             create_command("INVENTAR", "Zobrazíť obsah batohu.", "^(INVENTAR|INVENTORY|I)$", 2),
@@ -83,8 +83,8 @@ struct parser *create_parser()
             create_command("KONIEC", "Ukončiť hru.", "^(KONIEC|QUIT|EXIT)$", 2),
             create_command("RESTART", "Spustíť hru od začiatku.", "^(RESTART)$", 2),
 
-            create_command("ULOZ", "Uložíť stav rozohratej hry na disk.", "^(ULOZ|SAVE)( .*)?$", 4),
-            create_command("NAHRAJ", "Nahrať uloženú hru z disku.", "^(NAHRAJ|LOAD)( .*)?$", 3),
+            create_command("ULOZ", "Uložíť stav rozohratej hry na disk.", "^(ULOZ|SAVE)( (.*))?$", 4),
+            create_command("NAHRAJ", "Nahrať uloženú hru z disku.", "^(NAHRAJ|LOAD)( (.*))?$", 4),
         };
 
     // create container list out of commands
@@ -137,11 +137,12 @@ struct command *parse_input(struct parser *parser, char *input)
             // save matched groups
             for (size_t i = 0; i < cmd->nmatch; i++)
             {
+                // defensively free groups becuase of loading from history / command repetition
+                FREE(cmd->groups[i]);
+
                 if (groups[i].rm_so != -1 && groups[i].rm_eo != -1)
                 {
-                    char *dup = strndup(input + groups[i].rm_so, (size_t)(groups[i].rm_eo - groups[i].rm_so));
-                    cmd->groups[i] = strdup(trim(dup));
-                    FREE(dup);
+                    cmd->groups[i] = strndup(input + groups[i].rm_so, (size_t)(groups[i].rm_eo - groups[i].rm_so));
                 }
             }
 

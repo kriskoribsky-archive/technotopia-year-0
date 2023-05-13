@@ -1,3 +1,4 @@
+#define _POSIX_C_SOURCE 200809L // strdup
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -71,10 +72,10 @@ void command_look(struct game *game);
 void command_inventory(struct game *game);
 void command_commands(struct game *game);
 
-void command_north(struct game *game);
-void command_south(struct game *game);
-void command_east(struct game *game);
-void command_west(struct game *game);
+void command_north(struct game *game, struct command *command);
+void command_south(struct game *game, struct command *command);
+void command_east(struct game *game, struct command *command);
+void command_west(struct game *game, struct command *command);
 
 void command_about(void);
 void command_version(void);
@@ -84,6 +85,14 @@ void command_restart(struct game *game);
 
 void command_save(struct game *game, struct command *command);
 void command_load(struct game *game, struct command *command);
+
+// helpers
+void save_to_history(struct game *game, struct command *command);
+void clear_history(struct game *game);
+
+#define SAVE_COMMAND (save_to_history(game, command));
+#define COMMAND_ENTIRE 0 // groups index of whole command
+#define COMMAND_PARAM 3  // group index of param part
 
 void play_game(struct game *game)
 {
@@ -176,10 +185,10 @@ void execute_command(struct game *game, struct command *command)
     REGISTER_COMMAND("INVENTAR", command_inventory(game));
     REGISTER_COMMAND("PRIKAZY", command_commands(game));
 
-    REGISTER_COMMAND("SEVER", command_north(game));
-    REGISTER_COMMAND("JUH", command_south(game));
-    REGISTER_COMMAND("VYCHOD", command_east(game));
-    REGISTER_COMMAND("ZAPAD", command_west(game));
+    REGISTER_COMMAND("SEVER", command_north(game, command));
+    REGISTER_COMMAND("JUH", command_south(game, command));
+    REGISTER_COMMAND("VYCHOD", command_east(game, command));
+    REGISTER_COMMAND("ZAPAD", command_west(game, command));
 
     REGISTER_COMMAND("O HRE", command_about());
     REGISTER_COMMAND("VERZIA", command_version());
@@ -197,6 +206,7 @@ void execute_command(struct game *game, struct command *command)
 #undef REGISTER_COMMAND
 }
 
+// commands
 void command_inspect(struct game *game, struct command *command)
 {
     char *name;
@@ -247,6 +257,7 @@ void command_take(struct game *game, struct command *command)
     }
 
     delete_item_from_room(game->current_room, item);
+    SAVE_COMMAND;
 }
 
 void command_put(struct game *game, struct command *command)
@@ -267,6 +278,7 @@ void command_put(struct game *game, struct command *command)
 
     add_item_to_room(game->current_room, item);
     delete_item_from_backpack(game->backpack, item);
+    SAVE_COMMAND;
 }
 
 void command_use(struct game *game, struct command *command)
@@ -275,6 +287,8 @@ void command_use(struct game *game, struct command *command)
     CHECK_NULL_VOID(command);
 
     add_item_to_room(game->current_room, get_item_from_backpack(game->backpack, command->name));
+
+    SAVE_COMMAND;
 }
 
 void command_look(struct game *game)
@@ -327,7 +341,7 @@ void command_commands(struct game *game)
     }
 }
 
-void command_north(struct game *game)
+void command_north(struct game *game, struct command *command)
 {
     if (game->current_room->north == NULL)
     {
@@ -336,9 +350,10 @@ void command_north(struct game *game)
     }
 
     game->current_room = game->current_room->north;
+    SAVE_COMMAND;
 }
 
-void command_south(struct game *game)
+void command_south(struct game *game, struct command *command)
 {
     if (game->current_room->south == NULL)
     {
@@ -347,8 +362,9 @@ void command_south(struct game *game)
     }
 
     game->current_room = game->current_room->south;
+    SAVE_COMMAND;
 }
-void command_east(struct game *game)
+void command_east(struct game *game, struct command *command)
 {
     if (game->current_room->east == NULL)
     {
@@ -357,9 +373,10 @@ void command_east(struct game *game)
     }
 
     game->current_room = game->current_room->east;
+    SAVE_COMMAND;
 }
 
-void command_west(struct game *game)
+void command_west(struct game *game, struct command *command)
 {
     if (game->current_room->west == NULL)
     {
@@ -368,6 +385,7 @@ void command_west(struct game *game)
     }
 
     game->current_room = game->current_room->west;
+    SAVE_COMMAND;
 }
 
 void command_about(void)
@@ -400,8 +418,10 @@ void command_restart(struct game *game)
 
 void command_save(struct game *game, struct command *command)
 {
+    printf("SAVE FILE: '%s'\n", command->groups[3]);
+
     FILE *fp;
-    if ((fp = fopen(command->groups[2] != NULL ? command->groups[2] : DEFAULT_SAVE, "w")) == NULL)
+    if ((fp = fopen(command->groups[COMMAND_PARAM] != NULL ? command->groups[COMMAND_PARAM] : DEFAULT_SAVE, "w")) == NULL)
     {
         fprintf(stderr, "Error! Cannot open file.\n");
         return;
@@ -422,20 +442,45 @@ void command_save(struct game *game, struct command *command)
 void command_load(struct game *game, struct command *command)
 {
     FILE *fp;
-    if ((fp = fopen(command->groups[2] != NULL ? command->groups[2] : DEFAULT_SAVE, "r")) == NULL)
+    if ((fp = fopen(command->groups[COMMAND_PARAM] != NULL ? command->groups[COMMAND_PARAM] : DEFAULT_SAVE, "r")) == NULL)
     {
         printf("System error: Simulation data not found. Re-sync required.\n");
         return;
     }
 
-    // clear current history
-    game->parser->history = destroy_containers(game->parser->history);
+    // reload parser clearing history && parsed commands
+    game->parser = destroy_parser(game->parser);
+    game->parser = create_parser();
 
     // execute loaded commands
+    char input[INPUT_BUFFER_SIZE];
+    while (fgets(input, INPUT_BUFFER_SIZE, fp) != NULL)
+    {
+        execute_command(game, parse_input(game->parser, input));
+    }
 
     printf("Connecting to server...\n");
     sleep(1);
     printf("Simulation waypoint found. Your consciousness is now entwined.\n");
 
     fclose(fp);
+}
+
+// helpers
+void save_to_history(struct game *game, struct command *command)
+{
+    ASSERT(game != NULL && command != NULL && command->groups[COMMAND_ENTIRE] != NULL);
+    CHECK_NULL_VOID(game);
+    CHECK_NULL_VOID(command);
+
+    struct container *c = create_container(game->parser->history, TEXT, strdup(command->groups[COMMAND_ENTIRE]));
+    game->parser->history = game->parser->history != NULL ? game->parser->history : c;
+}
+
+void clear_history(struct game *game)
+{
+    ASSERT(game != NULL);
+    CHECK_NULL_VOID(game);
+
+    game->parser->history = destroy_containers(game->parser->history);
 }
