@@ -63,28 +63,28 @@ struct parser *create_parser()
     // predefine commands
     struct command *commands[] =
         {
-            create_command("PRESKUMAJ", "Opis predmetu v batohu/miestnosti.", "PRESKUMAJ|SEARCH (.*)", 2),
-            create_command("VEZMI", "Vložíť predmet z miestnosti do batohu.", "VEZMI|TAKE (.*)", 2),
-            create_command("POLOZ", "Položíť predmet z batohu do miestnosti.", "POLOZ|PUT (.*)", 2),
-            create_command("POUZI", "Použiť predmet z batohu alebo miestnosti.", "POUZI|USE (.*)", 2),
+            create_command("PRESKUMAJ", "Opis predmetu v batohu/miestnosti.", "^(PRESKUMAJ|SEARCH)( .*)?$", 3),
+            create_command("VEZMI", "Vložíť predmet z miestnosti do batohu.", "^(VEZMI|TAKE)( .*)?$", 3),
+            create_command("POLOZ", "Položíť predmet z batohu do miestnosti.", "^(POLOZ|PUT)( .*)?$", 3),
+            create_command("POUZI", "Použiť predmet z batohu alebo miestnosti.", "^(POUZI|USE)( .*)?$", 3),
 
-            create_command("ROZHLIADNI SA", "Informácie o miestnosti.", "ROZHLIADNI SA|LOOK", 1),
+            create_command("ROZHLIADNI SA", "Informácie o miestnosti.", "^(ROZHLIADNI SA|LOOK)$", 2),
             create_command("INVENTAR", "Zobrazíť obsah batohu.", "^(INVENTAR|INVENTORY|I)$", 2),
+            create_command("PRIKAZY", "Zoznam všetkých príkazov hry.", "^(PRIKAZY|HELP|POMOC)$", 2),
 
             create_command("SEVER", "Ísť smerom na sever od aktuálnej pozície.", "^(SEVER|S)$", 2),
-            create_command("JUH", "Ísť smerom na juh od aktuálnej pozície.", "JUH|J", 1),
-            create_command("VYCHOD", "Ísť smerom na východ od aktuálnej pozície.", "VYCHOD|V", 1),
-            create_command("ZAPAD", "Ísť smerom na západ od aktuálnej pozície.", "ZAPAD|Z", 1),
+            create_command("JUH", "Ísť smerom na juh od aktuálnej pozície.", "^(JUH|J)$", 2),
+            create_command("VYCHOD", "Ísť smerom na východ od aktuálnej pozície.", "^(VYCHOD|V)$", 2),
+            create_command("ZAPAD", "Ísť smerom na západ od aktuálnej pozície.", "^(ZAPAD|Z)$", 2),
 
-            create_command("O HRE", "Zobraziť krátky úvod do príbehu.", "O HRE|ABOUT", 1),
-            create_command("PRIKAZY", "Zoznam všetkých príkazov hry.", "PRIKAZY|HELP|POMOC", 1),
-            create_command("VERZIA", "Číslo verzie hry a kontakt na autora.", "VERZIA|VERSION", 1),
+            create_command("O HRE", "Zobraziť krátky úvod do príbehu.", "^(O HRE|ABOUT)$", 2),
+            create_command("VERZIA", "Číslo verzie hry a kontakt na autora.", "^(VERZIA|VERSION)$", 2),
 
-            create_command("KONIEC", "Ukončiť hru.", "KONIEC|QUIT|EXIT", 1),
-            create_command("RESTART", "Spustíť hru od začiatku.", "RESTART", 1),
+            create_command("KONIEC", "Ukončiť hru.", "^(KONIEC|QUIT|EXIT)$", 2),
+            create_command("RESTART", "Spustíť hru od začiatku.", "^(RESTART)$", 2),
 
-            create_command("ULOZ", "Uložíť stav rozohratej hry na disk.", "ULOZ|SAVE (.*)?", 2),
-            create_command("NAHRAJ", "Nahrať uloženú hru z disku.", "NAHRAJ|LOAD (.*)?", 2),
+            create_command("ULOZ", "Uložíť stav rozohratej hry na disk.", "^(ULOZ|SAVE)( .*)?$", 4),
+            create_command("NAHRAJ", "Nahrať uloženú hru z disku.", "^(NAHRAJ|LOAD)( .*)?$", 3),
         };
 
     // create container list out of commands
@@ -137,8 +137,12 @@ struct command *parse_input(struct parser *parser, char *input)
             // save matched groups
             for (size_t i = 0; i < cmd->nmatch; i++)
             {
-                ASSERT(groups[i].rm_so != -1);
-                cmd->groups[i] = strndup(input + groups[i].rm_so, (size_t)(groups[i].rm_eo - groups[i].rm_so));
+                if (groups[i].rm_so != -1 && groups[i].rm_eo != -1)
+                {
+                    char *dup = strndup(input + groups[i].rm_so, (size_t)(groups[i].rm_eo - groups[i].rm_so));
+                    cmd->groups[i] = strdup(trim(dup));
+                    FREE(dup);
+                }
             }
 
             return cmd;
