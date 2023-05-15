@@ -124,7 +124,7 @@ struct item *get_item_from_room(const struct room *room, const char *name)
 {
     ASSERT(room != NULL && name != NULL);
     CHECK_NULL(room);
-    CHECK_EMPTY(name);
+    CHECK_NULL(name);
 
     return get_from_container_by_name(room->items, name);
 }

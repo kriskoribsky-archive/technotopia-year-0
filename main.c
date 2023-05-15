@@ -10,7 +10,24 @@ int main(void)
 
     play_game(game);
 
-    destroy_game(game);
+    switch (game->state)
+    {
+    case SOLVED:
+        printf("Contratulations, you won!\n");
+        break;
 
+    case GAMEOVER:
+        break;
+
+    case RESTART:
+        destroy_game(game);
+        return main();
+
+    case PLAYING:
+        fprintf(stderr, "Error! Game exited prematurely.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    destroy_game(game);
     return EXIT_SUCCESS;
 }

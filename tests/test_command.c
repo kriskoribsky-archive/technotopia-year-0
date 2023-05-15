@@ -42,5 +42,5 @@ void test_create_command_handles_null_description(void)
 
 void test_create_command_handles_null_null_pattern(void)
 {
-    TEST_ASSERT_NULL(create_command("name", "desc", NULL, 2));
+    TEST_ASSERT_NOT_NULL(create_command("PRIKAZY", "Zobrazi zoznam prikazov.", NULL, 0));
 }

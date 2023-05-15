@@ -11,6 +11,9 @@ void test_add_item_to_backpack_adds_item_1(void);
 void test_add_item_to_backpack_adds_item_2(void);
 void test_add_item_to_backpack_adds_item_3(void);
 void test_add_item_to_backpack_adds_item_4(void);
+void test_add_item_to_backpack_adds_item_5(void);
+void test_add_item_to_backpack_adds_item_6(void);
+void test_add_item_to_backpack_adds_item_7(void);
 
 void test_get_item_from_backpack_handles_null_backpack(void);
 void test_get_item_from_backpack_handles_null_name(void);
@@ -28,6 +31,9 @@ int main(void)
     RUN_TEST(test_add_item_to_backpack_adds_item_2);
     RUN_TEST(test_add_item_to_backpack_adds_item_3);
     RUN_TEST(test_add_item_to_backpack_adds_item_4);
+    RUN_TEST(test_add_item_to_backpack_adds_item_5);
+    RUN_TEST(test_add_item_to_backpack_adds_item_6);
+    RUN_TEST(test_add_item_to_backpack_adds_item_7);
 
     RUN_TEST(test_get_item_from_backpack_handles_null_backpack);
     RUN_TEST(test_get_item_from_backpack_handles_null_name);
@@ -86,6 +92,33 @@ void test_add_item_to_backpack_adds_item_4(void)
 {
     struct backpack *backpack = create_backpack(2);
     struct item *item = create_item("KLUC", "Touto vecou sa odomykaju ine veci.", MOVABLE | USABLE | EXAMINABLE);
+    add_item_to_backpack(backpack, item);
+    struct item *backpack_item = get_item_from_backpack(backpack, item->name);
+    TEST_ASSERT_NOT_NULL(backpack_item);
+}
+
+void test_add_item_to_backpack_adds_item_5(void)
+{
+    struct backpack *backpack = create_backpack(4);
+    struct item *item = create_item("NEBO", "Ano, stale je tam hore.", MOVABLE);
+    add_item_to_backpack(backpack, item);
+    struct item *backpack_item = get_item_from_backpack(backpack, item->name);
+    TEST_ASSERT_NOT_NULL(backpack_item);
+}
+
+void test_add_item_to_backpack_adds_item_6(void)
+{
+    struct backpack *backpack = create_backpack(4);
+    struct item *item = create_item("SOCHA", "Vyobrazenie Bieleho plamena, ktory tancuje na mohylach svojich nepriatelov.", MOVABLE);
+    add_item_to_backpack(backpack, item);
+    struct item *backpack_item = get_item_from_backpack(backpack, item->name);
+    TEST_ASSERT_NOT_NULL(backpack_item);
+}
+
+void test_add_item_to_backpack_adds_item_7(void)
+{
+    struct backpack *backpack = create_backpack(6);
+    struct item *item = create_item("MEC", "Klasicky bojovy nastroj.", MOVABLE | USABLE | EXAMINABLE);
     add_item_to_backpack(backpack, item);
     struct item *backpack_item = get_item_from_backpack(backpack, item->name);
     TEST_ASSERT_NOT_NULL(backpack_item);
