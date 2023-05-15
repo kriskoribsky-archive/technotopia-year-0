@@ -199,6 +199,30 @@ void execute_command(struct game *game, struct command *command)
     REGISTER_COMMAND("Save", command_save(game, command));
     REGISTER_COMMAND("Load", command_load(game, command));
 
+    // arena commands
+    REGISTER_COMMAND("PRESKUMAJ", command_inspect(game, command));
+    REGISTER_COMMAND("VEZMI", command_take(game, command));
+    REGISTER_COMMAND("POLOZ", command_put(game, command));
+    REGISTER_COMMAND("POUZI", command_use(game, command));
+
+    REGISTER_COMMAND("ROZHLIADNI SA", command_look(game));
+    REGISTER_COMMAND("INVENTAR", command_inventory(game));
+    REGISTER_COMMAND("PRIKAZY", command_commands(game));
+
+    REGISTER_COMMAND("SEVER", command_north(game, command));
+    REGISTER_COMMAND("JUH", command_south(game, command));
+    REGISTER_COMMAND("VYCHOD", command_east(game, command));
+    REGISTER_COMMAND("ZAPAD", command_west(game, command));
+
+    REGISTER_COMMAND("O HRE", command_about());
+    REGISTER_COMMAND("VERZIA", command_version());
+
+    REGISTER_COMMAND("KONIEC", command_quit(game));
+    REGISTER_COMMAND("RESTART", command_restart(game));
+
+    REGISTER_COMMAND("ULOZ", command_save(game, command));
+    REGISTER_COMMAND("NAHRAJ", command_load(game, command));
+
     // command created, but not implemented (programming exception)
     fprintf(stderr, "Error! Command '%s' not implemented.\n", command->name);
     exit(EXIT_FAILURE);
@@ -282,8 +306,27 @@ void command_put(struct game *game, struct command *command)
 
 void command_use(struct game *game, struct command *command)
 {
-    CHECK_NULL_VOID(game);
-    CHECK_NULL_VOID(command);
+    char *name;
+    struct item *item;
+
+    if ((name = command->groups[COMMAND_PARAM]) == NULL)
+    {
+        PRINT("Please specify item you want to use.\n");
+        return;
+    }
+    if ((item = get_item_from_room(game->current_room, name)) == NULL)
+    {
+        if ((item = get_item_from_backpack(game->backpack, name)) == NULL)
+        {
+            PRINT("The item you want to use is not in the room or in the backpack.\n");
+            return;
+        }
+    }
+    if ((item->properties & USABLE) == 0)
+    {
+        PRINT("This item cannot be used.\n");
+        return;
+    }
 
     get_room(game->world, "room 1");
     printf("Used\n");

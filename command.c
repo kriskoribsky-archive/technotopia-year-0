@@ -34,6 +34,14 @@
         }                  \
     }
 
+#define CHECK_EMPTY(s)    \
+    {                     \
+        if ((*s) == '\0') \
+        {                 \
+            return NULL;  \
+        }                 \
+    }
+
 #define PATTERN_BUFFER_SIZE 256
 #define ERROR_BUFFER_SIZE 256
 #define REGCOMP_SUCCESS 0
@@ -42,6 +50,8 @@ struct command *create_command(char *name, char *description, char *pattern, siz
 {
     CHECK_NULL(name);
     CHECK_NULL(description);
+    CHECK_EMPTY(name);
+    CHECK_EMPTY(description);
 
     // prepare pattern
     char parsed_pattern[PATTERN_BUFFER_SIZE];
