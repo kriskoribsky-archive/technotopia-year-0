@@ -54,8 +54,9 @@ struct command *create_command(char *name, char *description, char *pattern, siz
     CHECK_EMPTY(description);
 
     // prepare pattern
-    char parsed_pattern[PATTERN_BUFFER_SIZE];
-    sprintf(parsed_pattern, pattern == NULL ? "^%s$" : "%s", pattern == NULL ? name : pattern);
+    // char parsed_pattern[PATTERN_BUFFER_SIZE];
+    // sprintf(parsed_pattern, pattern == NULL ? "^%s$" : "%s", pattern == NULL ? name : pattern);
+    pattern = pattern != NULL ? pattern : name;
 
     struct command *new;
     MALLOC(1, new);
@@ -67,7 +68,7 @@ struct command *create_command(char *name, char *description, char *pattern, siz
 
     // precompile pattern
     int rc;
-    if ((rc = regcomp(&new->preg, parsed_pattern, REG_EXTENDED | REG_ICASE)) != REGCOMP_SUCCESS)
+    if ((rc = regcomp(&new->preg, pattern, REG_EXTENDED | REG_ICASE)) != REGCOMP_SUCCESS)
     {
         char buffer[ERROR_BUFFER_SIZE];
         regerror(rc, &new->preg, buffer, sizeof(buffer));
