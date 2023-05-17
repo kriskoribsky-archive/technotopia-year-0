@@ -51,13 +51,6 @@
             ;                                       \
     }
 
-// game info
-#define NAME "TECHNOTOPIA: YEAR 0"
-#define DESC "Change the world, one line of code at a time."
-#define VERSION "1.0.0"
-#define AUTHOR "Kristian Koribsky (2023)"
-#define CONTACT "kristian.koribsky@student.tuke.sk | kriskoribsky.me"
-
 // game settings
 #define BACKPACK_CAPACITY 5
 #define DEFAULT_SAVE "save.txt"
@@ -463,12 +456,12 @@ void command_about(void)
 void command_version(void)
 {
     PRINT("\n");
-    PRINT("%s\n", NAME);
-    PRINT("%s\n", DESC);
+    PRINT("%s\n", "TECHNOTOPIA: YEAR 0");
+    PRINT("%s\n", "Change the world, one line of code at a time.");
     PRINT("-----------------------------------------------\n");
-    PRINT("Version %s\n", VERSION);
-    PRINT("%s\n", AUTHOR);
-    PRINT("%s\n", CONTACT);
+    PRINT("Version %s\n", "1.0.0");
+    PRINT("%s\n", "Kristian Koribsky (2023)");
+    PRINT("%s\n", "kristian.koribsky@student.tuke.sk | kriskoribsky.me");
     PRINT("\n");
     PRINT("\n");
 }

@@ -168,6 +168,7 @@ struct command *parse_input(struct parser *parser, char *input)
                 if (groups[i].rm_so != -1 && groups[i].rm_eo != -1)
                 {
                     cmd->groups[i] = strndup(input + groups[i].rm_so, (size_t)(groups[i].rm_eo - groups[i].rm_so));
+                    assert(cmd->groups[i] != NULL);
                 }
             }
 

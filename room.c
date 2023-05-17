@@ -61,11 +61,11 @@ struct room *create_room(char *name, char *description)
 
     new->name = strdup(name);
     new->description = strdup(description);
-    ASSERT(new->name != NULL);
-    ASSERT(new->description != NULL);
     new->north = new->south = new->east = new->west = NULL;
     new->items = NULL;
 
+    assert(new->name != NULL);
+    assert(new->description != NULL);
     return new;
 }
 

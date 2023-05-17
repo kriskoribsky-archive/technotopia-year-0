@@ -54,35 +54,38 @@ struct command *create_command(char *name, char *description, char *pattern, siz
     CHECK_EMPTY(description);
 
     // prepare pattern
-    // char parsed_pattern[PATTERN_BUFFER_SIZE];
-    // sprintf(parsed_pattern, pattern == NULL ? "^%s$" : "%s", pattern == NULL ? name : pattern);
-    pattern = pattern != NULL ? pattern : name;
-
-    struct command *new;
-    MALLOC(1, new);
-
-    new->name = strdup(name);
-    new->description = strdup(description);
-    ASSERT(new->name != NULL);
-    ASSERT(new->description != NULL);
+    char parsed_pattern[PATTERN_BUFFER_SIZE];
+    sprintf(parsed_pattern, pattern == NULL ? "^%s$" : "%s", pattern == NULL ? name : pattern);
 
     // precompile pattern
+    regex_t preg;
     int rc;
-    if ((rc = regcomp(&new->preg, pattern, REG_EXTENDED | REG_ICASE)) != REGCOMP_SUCCESS)
+    if ((rc = regcomp(&preg, parsed_pattern, REG_EXTENDED | REG_ICASE)) != REGCOMP_SUCCESS)
     {
         char buffer[ERROR_BUFFER_SIZE];
-        regerror(rc, &new->preg, buffer, sizeof(buffer));
+        regerror(rc, &preg, buffer, sizeof(buffer));
         fprintf(stderr, "Error! Compilation of regular expression '%s' failed.\n", buffer);
         exit(EXIT_FAILURE);
     }
 
-    new->nmatch = nmatch;
+    // allocate command
+    nmatch = nmatch < 1 ? 1 : nmatch; // at least one group should be always matched
+
+    struct command *new;
+    MALLOC(1, new);
     MALLOC(nmatch, new->groups);
+
+    new->name = strdup(name);
+    new->description = strdup(description);
+    new->preg = preg;
+    new->nmatch = nmatch;
     for (size_t i = 0; i < nmatch; i++)
     {
         new->groups[i] = NULL;
     }
 
+    assert(new->name != NULL);
+    assert(new->description != NULL);
     return new;
 }
 
