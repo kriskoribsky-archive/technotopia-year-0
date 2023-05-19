@@ -115,8 +115,9 @@ struct command *parse_input(struct parser *parser, char *input)
     CHECK_EMPTY(input);
 
     // parse input
-    char parsed_input[strlen(input)];
-    trim(parsed_input, strlen(input), input);
+    size_t len = strlen(input) + 1;
+    char parsed_input[len];
+    trim(parsed_input, len, input);
 
     CHECK_NULL(parsed_input);
     CHECK_EMPTY(parsed_input);
@@ -167,7 +168,7 @@ size_t trim(char *out, size_t len, const char *s)
     const char *end;
     size_t out_size;
 
-    // Trim leading space
+    // trim leading space
     while (isspace((unsigned char)*s))
         s++;
 
@@ -177,16 +178,16 @@ size_t trim(char *out, size_t len, const char *s)
         return 1;
     }
 
-    // Trim trailing space
+    // trim trailing space
     end = s + strlen(s) - 1;
     while (end > s && isspace((unsigned char)*end))
         end--;
     end++;
 
-    // Set output size to minimum of trimmed string length and buffer size minus 1
+    // set output size to minimum of trimmed string length and buffer size minus 1
     out_size = (size_t)(end - s) < (size_t)len - 1 ? (size_t)(end - s) : (size_t)len - 1;
 
-    // Copy trimmed string and add null terminator
+    // copy trimmed string and add null terminator
     memcpy(out, s, out_size);
     out[out_size] = 0;
 

@@ -15,12 +15,48 @@ void test_parse_input_handles_whitespace_before(void);
 void test_parse_input_handles_whitespace_after(void);
 void test_parse_input_handles_whitespace_before_after(void);
 
-void test_parse_input_correctly_parses_command_inspect(void);
-void test_parse_input_correctly_parses_command_take(void);
-void test_parse_input_correctly_parses_command_put(void);
-void test_parse_input_correctly_parses_command_use(void);
-void test_parse_input_correctly_parses_command_save(void);
-void test_parse_input_correctly_parses_command_load(void);
+void test_parse_input_correctly_parses_command_inspect_with_whitespace(void);
+void test_parse_input_correctly_parses_command_take_with_whitespace(void);
+void test_parse_input_correctly_parses_command_put_with_whitespace(void);
+void test_parse_input_correctly_parses_command_use_with_whitespace(void);
+void test_parse_input_correctly_parses_command_save_with_whitespace(void);
+void test_parse_input_correctly_parses_command_load_with_whitespace(void);
+
+void test_parse_input_correctly_parses_exact_predefined_commands_0(void);
+void test_parse_input_correctly_parses_exact_predefined_commands_1(void);
+void test_parse_input_correctly_parses_exact_predefined_commands_2(void);
+void test_parse_input_correctly_parses_exact_predefined_commands_3(void);
+void test_parse_input_correctly_parses_exact_predefined_commands_4(void);
+void test_parse_input_correctly_parses_exact_predefined_commands_5(void);
+void test_parse_input_correctly_parses_exact_predefined_commands_6(void);
+void test_parse_input_correctly_parses_exact_predefined_commands_7(void);
+void test_parse_input_correctly_parses_exact_predefined_commands_8(void);
+void test_parse_input_correctly_parses_exact_predefined_commands_9(void);
+void test_parse_input_correctly_parses_exact_predefined_commands_10(void);
+
+void test_parse_input_correctly_parses_exact_predefined_commands_11(void);
+void test_parse_input_correctly_parses_exact_predefined_commands_12(void);
+void test_parse_input_correctly_parses_exact_predefined_commands_13(void);
+void test_parse_input_correctly_parses_exact_predefined_commands_14(void);
+void test_parse_input_correctly_parses_exact_predefined_commands_15(void);
+void test_parse_input_correctly_parses_exact_predefined_commands_16(void);
+void test_parse_input_correctly_parses_exact_predefined_commands_17(void);
+void test_parse_input_correctly_parses_exact_predefined_commands_18(void);
+void test_parse_input_correctly_parses_exact_predefined_commands_19(void);
+void test_parse_input_correctly_parses_exact_predefined_commands_20(void);
+void test_parse_input_correctly_parses_exact_predefined_commands_21(void);
+
+void test_parse_input_corretly_parses_case_insensitive_predefined_commands_0(void);
+void test_parse_input_corretly_parses_case_insensitive_predefined_commands_1(void);
+void test_parse_input_corretly_parses_case_insensitive_predefined_commands_2(void);
+void test_parse_input_corretly_parses_case_insensitive_predefined_commands_3(void);
+void test_parse_input_corretly_parses_case_insensitive_predefined_commands_4(void);
+void test_parse_input_corretly_parses_case_insensitive_predefined_commands_5(void);
+void test_parse_input_corretly_parses_case_insensitive_predefined_commands_6(void);
+void test_parse_input_corretly_parses_case_insensitive_predefined_commands_7(void);
+void test_parse_input_corretly_parses_case_insensitive_predefined_commands_8(void);
+void test_parse_input_corretly_parses_case_insensitive_predefined_commands_9(void);
+void test_parse_input_corretly_parses_case_insensitive_predefined_commands_10(void);
 
 int main(void)
 {
@@ -36,12 +72,48 @@ int main(void)
     RUN_TEST(test_parse_input_handles_whitespace_after);
     RUN_TEST(test_parse_input_handles_whitespace_before_after);
 
-    RUN_TEST(test_parse_input_correctly_parses_command_inspect);
-    RUN_TEST(test_parse_input_correctly_parses_command_take);
-    RUN_TEST(test_parse_input_correctly_parses_command_put);
-    RUN_TEST(test_parse_input_correctly_parses_command_use);
-    RUN_TEST(test_parse_input_correctly_parses_command_save);
-    RUN_TEST(test_parse_input_correctly_parses_command_load);
+    RUN_TEST(test_parse_input_correctly_parses_command_inspect_with_whitespace);
+    RUN_TEST(test_parse_input_correctly_parses_command_take_with_whitespace);
+    RUN_TEST(test_parse_input_correctly_parses_command_put_with_whitespace);
+    RUN_TEST(test_parse_input_correctly_parses_command_use_with_whitespace);
+    RUN_TEST(test_parse_input_correctly_parses_command_save_with_whitespace);
+    RUN_TEST(test_parse_input_correctly_parses_command_load_with_whitespace);
+
+    RUN_TEST(test_parse_input_correctly_parses_exact_predefined_commands_0);
+    RUN_TEST(test_parse_input_correctly_parses_exact_predefined_commands_1);
+    RUN_TEST(test_parse_input_correctly_parses_exact_predefined_commands_2);
+    RUN_TEST(test_parse_input_correctly_parses_exact_predefined_commands_3);
+    RUN_TEST(test_parse_input_correctly_parses_exact_predefined_commands_4);
+    RUN_TEST(test_parse_input_correctly_parses_exact_predefined_commands_5);
+    RUN_TEST(test_parse_input_correctly_parses_exact_predefined_commands_6);
+    RUN_TEST(test_parse_input_correctly_parses_exact_predefined_commands_7);
+    RUN_TEST(test_parse_input_correctly_parses_exact_predefined_commands_8);
+    RUN_TEST(test_parse_input_correctly_parses_exact_predefined_commands_9);
+    RUN_TEST(test_parse_input_correctly_parses_exact_predefined_commands_10);
+
+    RUN_TEST(test_parse_input_correctly_parses_exact_predefined_commands_11);
+    RUN_TEST(test_parse_input_correctly_parses_exact_predefined_commands_12);
+    RUN_TEST(test_parse_input_correctly_parses_exact_predefined_commands_13);
+    RUN_TEST(test_parse_input_correctly_parses_exact_predefined_commands_14);
+    RUN_TEST(test_parse_input_correctly_parses_exact_predefined_commands_15);
+    RUN_TEST(test_parse_input_correctly_parses_exact_predefined_commands_16);
+    RUN_TEST(test_parse_input_correctly_parses_exact_predefined_commands_17);
+    RUN_TEST(test_parse_input_correctly_parses_exact_predefined_commands_18);
+    RUN_TEST(test_parse_input_correctly_parses_exact_predefined_commands_19);
+    RUN_TEST(test_parse_input_correctly_parses_exact_predefined_commands_20);
+    RUN_TEST(test_parse_input_correctly_parses_exact_predefined_commands_21);
+
+    RUN_TEST(test_parse_input_corretly_parses_case_insensitive_predefined_commands_0);
+    RUN_TEST(test_parse_input_corretly_parses_case_insensitive_predefined_commands_1);
+    RUN_TEST(test_parse_input_corretly_parses_case_insensitive_predefined_commands_2);
+    RUN_TEST(test_parse_input_corretly_parses_case_insensitive_predefined_commands_3);
+    RUN_TEST(test_parse_input_corretly_parses_case_insensitive_predefined_commands_4);
+    RUN_TEST(test_parse_input_corretly_parses_case_insensitive_predefined_commands_5);
+    RUN_TEST(test_parse_input_corretly_parses_case_insensitive_predefined_commands_6);
+    RUN_TEST(test_parse_input_corretly_parses_case_insensitive_predefined_commands_7);
+    RUN_TEST(test_parse_input_corretly_parses_case_insensitive_predefined_commands_8);
+    RUN_TEST(test_parse_input_corretly_parses_case_insensitive_predefined_commands_9);
+    RUN_TEST(test_parse_input_corretly_parses_case_insensitive_predefined_commands_10);
 
     return UNITY_END();
 }
@@ -102,7 +174,7 @@ void test_parse_input_handles_whitespace_before_after(void)
     TEST_ASSERT_EQUAL_STRING("SEVER", cmd->name);
 }
 
-void test_parse_input_correctly_parses_command_inspect(void)
+void test_parse_input_correctly_parses_command_inspect_with_whitespace(void)
 {
     struct command *cmd = parse_input(parser, "   preskUmaJ horcica    ");
     TEST_ASSERT_NOT_NULL(cmd);
@@ -110,7 +182,7 @@ void test_parse_input_correctly_parses_command_inspect(void)
     TEST_ASSERT_EQUAL_STRING("horcica", cmd->groups[COMMAND_PARAM]);
 }
 
-void test_parse_input_correctly_parses_command_take(void)
+void test_parse_input_correctly_parses_command_take_with_whitespace(void)
 {
     struct command *cmd = parse_input(parser, "VEZMi zlte tricko   \n");
     TEST_ASSERT_NOT_NULL(cmd);
@@ -118,7 +190,7 @@ void test_parse_input_correctly_parses_command_take(void)
     TEST_ASSERT_EQUAL_STRING("zlte tricko", cmd->groups[COMMAND_PARAM]);
 }
 
-void test_parse_input_correctly_parses_command_put(void)
+void test_parse_input_correctly_parses_command_put_with_whitespace(void)
 {
     struct command *cmd = parse_input(parser, "\tpoloz NIC NOVE\n");
     TEST_ASSERT_NOT_NULL(cmd);
@@ -126,24 +198,222 @@ void test_parse_input_correctly_parses_command_put(void)
     TEST_ASSERT_EQUAL_STRING("NIC NOVE", cmd->groups[COMMAND_PARAM]);
 }
 
-void test_parse_input_correctly_parses_command_use(void)
+void test_parse_input_correctly_parses_command_use_with_whitespace(void)
 {
     struct command *cmd = parse_input(parser, "\tPOUZI");
     TEST_ASSERT_NOT_NULL(cmd);
     TEST_ASSERT_EQUAL_STRING("POUZI", cmd->name);
     TEST_ASSERT_NULL(cmd->groups[COMMAND_PARAM]);
 }
-void test_parse_input_correctly_parses_command_save(void)
+void test_parse_input_correctly_parses_command_save_with_whitespace(void)
 {
     struct command *cmd = parse_input(parser, "\n\tsave ");
     TEST_ASSERT_NOT_NULL(cmd);
     TEST_ASSERT_EQUAL_STRING("ULOZ", cmd->name);
     TEST_ASSERT_NULL(cmd->groups[COMMAND_PARAM]);
 }
-void test_parse_input_correctly_parses_command_load(void)
+void test_parse_input_correctly_parses_command_load_with_whitespace(void)
 {
     struct command *cmd = parse_input(parser, "\t\rload file.txt        ");
     TEST_ASSERT_NOT_NULL(cmd);
     TEST_ASSERT_EQUAL_STRING("NAHRAJ", cmd->name);
     TEST_ASSERT_EQUAL_STRING("file.txt", cmd->groups[COMMAND_PARAM]);
+}
+
+void test_parse_input_correctly_parses_exact_predefined_commands_0(void)
+{
+    char *input = "KONIEC";
+    TEST_ASSERT_NOT_NULL(parse_input(parser, input));
+}
+
+void test_parse_input_correctly_parses_exact_predefined_commands_1(void)
+{
+    char *input = "SEVER";
+    TEST_ASSERT_NOT_NULL(parse_input(parser, input));
+}
+
+void test_parse_input_correctly_parses_exact_predefined_commands_2(void)
+{
+    char *input = "JUH";
+    TEST_ASSERT_NOT_NULL(parse_input(parser, input));
+}
+
+void test_parse_input_correctly_parses_exact_predefined_commands_3(void)
+{
+    char *input = "VYCHOD";
+    TEST_ASSERT_NOT_NULL(parse_input(parser, input));
+}
+
+void test_parse_input_correctly_parses_exact_predefined_commands_4(void)
+{
+    char *input = "ZAPAD";
+    TEST_ASSERT_NOT_NULL(parse_input(parser, input));
+}
+
+void test_parse_input_correctly_parses_exact_predefined_commands_5(void)
+{
+    char *input = "ROZHLIADNI SA";
+    TEST_ASSERT_NOT_NULL(parse_input(parser, input));
+}
+
+void test_parse_input_correctly_parses_exact_predefined_commands_6(void)
+{
+    char *input = "PRIKAZY";
+    TEST_ASSERT_NOT_NULL(parse_input(parser, input));
+}
+
+void test_parse_input_correctly_parses_exact_predefined_commands_7(void)
+{
+    char *input = "VERZIA";
+    TEST_ASSERT_NOT_NULL(parse_input(parser, input));
+}
+
+void test_parse_input_correctly_parses_exact_predefined_commands_8(void)
+{
+    char *input = "RESTART";
+    TEST_ASSERT_NOT_NULL(parse_input(parser, input));
+}
+
+void test_parse_input_correctly_parses_exact_predefined_commands_9(void)
+{
+    char *input = "O HRE";
+    TEST_ASSERT_NOT_NULL(parse_input(parser, input));
+}
+
+void test_parse_input_correctly_parses_exact_predefined_commands_10(void)
+{
+    char *input = "INVENTAR";
+    TEST_ASSERT_NOT_NULL(parse_input(parser, input));
+}
+
+void test_parse_input_correctly_parses_exact_predefined_commands_11(void)
+{
+    struct command *command = parse_input(parser, "KONIEC");
+    TEST_ASSERT_NOT_NULL(command);
+}
+
+void test_parse_input_correctly_parses_exact_predefined_commands_12(void)
+{
+    struct command *command = parse_input(parser, "SEVER");
+    TEST_ASSERT_NOT_NULL(command);
+}
+
+void test_parse_input_correctly_parses_exact_predefined_commands_13(void)
+{
+    struct command *command = parse_input(parser, "JUH");
+    TEST_ASSERT_NOT_NULL(command);
+}
+
+void test_parse_input_correctly_parses_exact_predefined_commands_14(void)
+{
+    struct command *command = parse_input(parser, "VYCHOD");
+    TEST_ASSERT_NOT_NULL(command);
+}
+
+void test_parse_input_correctly_parses_exact_predefined_commands_15(void)
+{
+    struct command *command = parse_input(parser, "ZAPAD");
+    TEST_ASSERT_NOT_NULL(command);
+}
+
+void test_parse_input_correctly_parses_exact_predefined_commands_16(void)
+{
+    struct command *command = parse_input(parser, "ROZHLIADNI SA");
+    TEST_ASSERT_NOT_NULL(command);
+}
+
+void test_parse_input_correctly_parses_exact_predefined_commands_17(void)
+{
+    struct command *command = parse_input(parser, "PRIKAZY");
+    TEST_ASSERT_NOT_NULL(command);
+}
+
+void test_parse_input_correctly_parses_exact_predefined_commands_18(void)
+{
+    struct command *command = parse_input(parser, "VERZIA");
+    TEST_ASSERT_NOT_NULL(command);
+}
+
+void test_parse_input_correctly_parses_exact_predefined_commands_19(void)
+{
+    struct command *command = parse_input(parser, "RESTART");
+    TEST_ASSERT_NOT_NULL(command);
+}
+
+void test_parse_input_correctly_parses_exact_predefined_commands_20(void)
+{
+    struct command *command = parse_input(parser, "O HRE");
+    TEST_ASSERT_NOT_NULL(command);
+}
+
+void test_parse_input_correctly_parses_exact_predefined_commands_21(void)
+{
+    struct command *command = parse_input(parser, "INVENTAR");
+    TEST_ASSERT_NOT_NULL(command);
+}
+
+void test_parse_input_corretly_parses_case_insensitive_predefined_commands_0(void)
+{
+    struct command *command = parse_input(parser, "KONIeC");
+    TEST_ASSERT_NOT_NULL(command);
+}
+
+void test_parse_input_corretly_parses_case_insensitive_predefined_commands_1(void)
+{
+    struct command *command = parse_input(parser, "sevER");
+    TEST_ASSERT_NOT_NULL(command);
+}
+
+void test_parse_input_corretly_parses_case_insensitive_predefined_commands_2(void)
+{
+    struct command *command = parse_input(parser, "jUh");
+    TEST_ASSERT_NOT_NULL(command);
+}
+
+void test_parse_input_corretly_parses_case_insensitive_predefined_commands_3(void)
+{
+    struct command *command = parse_input(parser, "vyChOD");
+    TEST_ASSERT_NOT_NULL(command);
+}
+
+void test_parse_input_corretly_parses_case_insensitive_predefined_commands_4(void)
+{
+    struct command *command = parse_input(parser, "zApaD");
+    TEST_ASSERT_NOT_NULL(command);
+}
+
+void test_parse_input_corretly_parses_case_insensitive_predefined_commands_5(void)
+{
+    struct command *command = parse_input(parser, "rOZHLiAdNi sa");
+    TEST_ASSERT_NOT_NULL(command);
+}
+
+void test_parse_input_corretly_parses_case_insensitive_predefined_commands_6(void)
+{
+    struct command *command = parse_input(parser, "prIkAzy");
+    TEST_ASSERT_NOT_NULL(command);
+}
+
+void test_parse_input_corretly_parses_case_insensitive_predefined_commands_7(void)
+{
+    struct command *command = parse_input(parser, "VerZIA");
+    TEST_ASSERT_NOT_NULL(command);
+}
+
+void test_parse_input_corretly_parses_case_insensitive_predefined_commands_8(void)
+{
+    struct command *command = parse_input(parser, "rEStarT");
+    TEST_ASSERT_NOT_NULL(command);
+}
+
+void test_parse_input_corretly_parses_case_insensitive_predefined_commands_9(void)
+{
+    struct command *command = parse_input(parser, "O hRe");
+    TEST_ASSERT_NOT_NULL(command);
+}
+
+void test_parse_input_corretly_parses_case_insensitive_predefined_commands_10(void)
+{
+    struct command *command = parse_input(parser, "inveNtaR");
+    TEST_ASSERT_NOT_NULL(command);
 }
