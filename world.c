@@ -110,9 +110,11 @@ struct container *create_world()
     add_item_to_room(apartment, sleeppod);
     add_item_to_room(apartment, watches);
 
-    add_item_to_room(garage, create_item("itemtemp a", "desc", NONE));
-    add_item_to_room(garage, create_item("itemtemp b", "desc", NONE));
-    add_item_to_room(garage, create_item("itemtemp c", "desc", NONE));
+    add_item_to_room(garage, create_item("itemtemp a", "desc", MOVABLE | USABLE | EXAMINABLE));
+    add_item_to_room(garage, create_item("itemtemp b", "desc", MOVABLE | USABLE | EXAMINABLE));
+    add_item_to_room(garage, create_item("itemtemp c", "desc", MOVABLE | USABLE | EXAMINABLE));
+    add_item_to_room(garage, create_item("itemtemp d", "desc", MOVABLE | USABLE | EXAMINABLE));
+    add_item_to_room(garage, create_item("itemtemp e", "desc", MOVABLE | USABLE | EXAMINABLE));
 
     // world
     struct container *world = add_room_to_world(NULL, apartment);

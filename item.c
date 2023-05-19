@@ -42,6 +42,8 @@
 
 struct item *create_item(char *name, char *description, unsigned int properties)
 {
+    ASSERT(name != NULL);
+    ASSERT(description != NULL);
     CHECK_NULL(name);
     CHECK_NULL(description);
     CHECK_EMPTY(name);
@@ -61,6 +63,7 @@ struct item *create_item(char *name, char *description, unsigned int properties)
 
 struct item *destroy_item(struct item *item)
 {
+    ASSERT(item != NULL);
     CHECK_NULL(item);
 
     FREE(item->name);

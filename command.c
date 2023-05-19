@@ -54,13 +54,21 @@ struct command *create_command(char *name, char *description, char *pattern, siz
     CHECK_EMPTY(description);
 
     // prepare pattern
-    char parsed_pattern[PATTERN_BUFFER_SIZE];
-    sprintf(parsed_pattern, pattern == NULL ? "^%s$" : "%s", pattern == NULL ? name : pattern);
+    char valid_pattern[PATTERN_BUFFER_SIZE];
+    if (pattern == NULL)
+    {
+        sprintf(valid_pattern, "^%s$", name);
+        nmatch = 1;
+    }
+    else
+    {
+        sprintf(valid_pattern, "%s", pattern);
+    }
 
     // precompile pattern
     regex_t preg;
     int rc;
-    if ((rc = regcomp(&preg, parsed_pattern, REG_EXTENDED | REG_ICASE)) != REGCOMP_SUCCESS)
+    if ((rc = regcomp(&preg, valid_pattern, REG_EXTENDED | REG_ICASE)) != REGCOMP_SUCCESS)
     {
         char buffer[ERROR_BUFFER_SIZE];
         regerror(rc, &preg, buffer, sizeof(buffer));
@@ -69,8 +77,6 @@ struct command *create_command(char *name, char *description, char *pattern, siz
     }
 
     // allocate command
-    nmatch = nmatch < 1 ? 1 : nmatch; // at least one group should be always matched
-
     struct command *new;
     MALLOC(1, new);
     MALLOC(nmatch, new->groups);

@@ -44,19 +44,11 @@
         }                    \
     }
 
-#define CLEAR_INPUT_BUFFER()                        \
-    {                                               \
-        int c;                                      \
-        while ((c = getchar()) != '\n' && c != EOF) \
-            ;                                       \
-    }
-
 // game settings
 #define BACKPACK_CAPACITY 5
 #define DEFAULT_SAVE "save.txt"
-#define PRINT_DELAY sleep(1)
-#define PRINT(format, ...) (printf("" format, ##__VA_ARGS__))
-#define PROMPT (printf("\n> "))
+// #define PRINT_DELAY sleep(1)
+#define PRINT_DELAY ((void)0)
 
 // commands
 void command_inspect(struct game *game, struct command *command);
@@ -64,7 +56,7 @@ void command_take(struct game *game, struct command *command);
 void command_put(struct game *game, struct command *command);
 void command_use(struct game *game, struct command *command);
 
-void command_look(struct game *game);
+void command_explore(struct game *game);
 void command_inventory(struct game *game);
 void command_commands(struct game *game);
 
@@ -85,9 +77,17 @@ void command_load(struct game *game, struct command *command);
 // helpers
 void save_to_history(struct game *game, struct command *command);
 
-#define SAVE_COMMAND (save_to_history(game, command))
 #define COMMAND_ENTIRE 0 // groups index of whole command
 #define COMMAND_PARAM 3  // group index of param part
+#define SAVE_COMMAND (save_to_history(game, command))
+#define REGISTER_COMMAND(cmd, callback)        \
+    {                                          \
+        if (strcmp(command->name, (cmd)) == 0) \
+        {                                      \
+            callback;                          \
+            return;                            \
+        }                                      \
+    }
 
 void play_game(struct game *game)
 {
@@ -108,7 +108,7 @@ void play_game(struct game *game)
         }
 
         // input
-        PROMPT;
+        printf("\n> ");
         if (fgets(input, INPUT_BUFFER_SIZE, stdin) == NULL)
         {
             fprintf(stderr, "Encountered EOF, gracefully exiting the game.\n");
@@ -129,9 +129,10 @@ struct game *create_game()
     new->parser = create_parser();
     new->world = create_world();
     new->backpack = create_backpack(BACKPACK_CAPACITY);
-    ASSERT(new->parser != NULL);
-    ASSERT(new->world != NULL);
-    ASSERT(new->backpack != NULL);
+
+    assert(new->parser != NULL);
+    assert(new->world != NULL);
+    assert(new->backpack != NULL);
 
     new->current_room = new->world->room;
 
@@ -152,20 +153,16 @@ struct game *destroy_game(struct game *game)
 }
 
 void execute_command(struct game *game, struct command *command)
-#define REGISTER_COMMAND(cmd, callback)        \
-    {                                          \
-        if (strcmp(command->name, (cmd)) == 0) \
-        {                                      \
-            callback;                          \
-            return;                            \
-        }                                      \
-    }
 {
     ASSERT(game != NULL);
     CHECK_NULL_VOID(game);
+    CHECK_NULL_VOID(game->parser);
+    CHECK_NULL_VOID(game->world);
+    CHECK_NULL_VOID(game->current_room);
+    CHECK_NULL_VOID(game->backpack);
     if (command == NULL)
     {
-        PRINT("You do not have knowledge to do that.\n");
+        printf("You do not have knowledge to do that.\n");
         return;
     }
 
@@ -174,7 +171,7 @@ void execute_command(struct game *game, struct command *command)
     REGISTER_COMMAND("Put", command_put(game, command));
     REGISTER_COMMAND("Use", command_use(game, command));
 
-    REGISTER_COMMAND("Look around", command_look(game));
+    REGISTER_COMMAND("Explore", command_explore(game));
     REGISTER_COMMAND("Inventory", command_inventory(game));
     REGISTER_COMMAND("Commands", command_commands(game));
 
@@ -198,7 +195,7 @@ void execute_command(struct game *game, struct command *command)
     REGISTER_COMMAND("POLOZ", command_put(game, command));
     REGISTER_COMMAND("POUZI", command_use(game, command));
 
-    REGISTER_COMMAND("ROZHLIADNI SA", command_look(game));
+    REGISTER_COMMAND("ROZHLIADNI SA", command_explore(game));
     REGISTER_COMMAND("INVENTAR", command_inventory(game));
     REGISTER_COMMAND("PRIKAZY", command_commands(game));
 
@@ -219,8 +216,6 @@ void execute_command(struct game *game, struct command *command)
     // command created, but not implemented (programming exception)
     fprintf(stderr, "Error! Command '%s' not implemented.\n", command->name);
     exit(EXIT_FAILURE);
-
-#undef REGISTER_COMMAND
 }
 
 // commands
@@ -231,24 +226,24 @@ void command_inspect(struct game *game, struct command *command)
 
     if ((name = command->groups[COMMAND_PARAM]) == NULL)
     {
-        PRINT("Please specify item you want to examine.\n");
+        printf("Please specify item you want to examine.\n");
         return;
     }
     if ((item = get_item_from_room(game->current_room, name)) == NULL)
     {
         if ((item = get_item_from_backpack(game->backpack, name)) == NULL)
         {
-            PRINT("The item you want to examine is not in the room or in the backpack.\n");
+            printf("The item you want to examine is not in the room or in the backpack.\n");
             return;
         }
     }
     if ((item->properties & EXAMINABLE) == 0)
     {
-        PRINT("Object is not examinable.\n");
+        printf("Object is not examinable.\n");
         return;
     }
 
-    PRINT("%s\n", item->description);
+    printf("%s\n", item->description);
 }
 
 void command_take(struct game *game, struct command *command)
@@ -258,17 +253,17 @@ void command_take(struct game *game, struct command *command)
 
     if ((name = command->groups[COMMAND_PARAM]) == NULL)
     {
-        PRINT("Please specify item you want to take.\n");
+        printf("Please specify item you want to take.\n");
         return;
     }
     if ((item = get_item_from_room(game->current_room, name)) == NULL)
     {
-        PRINT("The item you want to take is not in the room.\n");
+        printf("The item you want to take is not in the room.\n");
         return;
     }
     if (add_item_to_backpack(game->backpack, item) == false)
     {
-        PRINT("The backpack is full or the object is not movable.\n");
+        printf("The backpack is full or the object is not movable.\n");
         return;
     }
 
@@ -283,12 +278,12 @@ void command_put(struct game *game, struct command *command)
 
     if ((name = command->groups[COMMAND_PARAM]) == NULL)
     {
-        PRINT("Please specify item you want to put down.\n");
+        printf("Please specify item you want to put down.\n");
         return;
     }
     if ((item = get_item_from_backpack(game->backpack, name)) == NULL)
     {
-        PRINT("The item you want to put down is not in your backpack..\n");
+        printf("The item you want to put down is not in your backpack.\n");
         return;
     }
 
@@ -304,20 +299,20 @@ void command_use(struct game *game, struct command *command)
 
     if ((name = command->groups[COMMAND_PARAM]) == NULL)
     {
-        PRINT("Please specify item you want to use.\n");
+        printf("Please specify item you want to use.\n");
         return;
     }
     if ((item = get_item_from_room(game->current_room, name)) == NULL)
     {
         if ((item = get_item_from_backpack(game->backpack, name)) == NULL)
         {
-            PRINT("The item you want to use is not in the room or in the backpack.\n");
+            printf("The item you want to use is not in the room or in the backpack.\n");
             return;
         }
     }
     if ((item->properties & USABLE) == 0)
     {
-        PRINT("This item cannot be used.\n");
+        printf("This item cannot be used.\n");
         return;
     }
 
@@ -327,37 +322,34 @@ void command_use(struct game *game, struct command *command)
     SAVE_COMMAND;
 }
 
-void command_look(struct game *game)
+void command_explore(struct game *game)
 {
-    PRINT("Performing AR scan of the room...\n");
-    PRINT_DELAY;
-
     // exits
-    PRINT("Exits:\n");
+    printf("Exits:\n");
     if (game->current_room->north)
     {
-        PRINT("   North -> %s\n", game->current_room->north->name);
+        printf("   North -> %s\n", game->current_room->north->name);
     }
     if (game->current_room->south)
     {
-        PRINT("   South -> %s\n", game->current_room->south->name);
+        printf("   South -> %s\n", game->current_room->south->name);
     }
     if (game->current_room->east)
     {
-        PRINT("   East  -> %s\n", game->current_room->east->name);
+        printf("   East  -> %s\n", game->current_room->east->name);
     }
     if (game->current_room->west)
     {
-        PRINT("   West  -> %s\n", game->current_room->west->name);
+        printf("   West  -> %s\n", game->current_room->west->name);
     }
 
     // show items
     if (game->current_room->items)
     {
-        PRINT("Items:\n");
+        printf("Items:\n");
         for (struct container *current = game->current_room->items; current != NULL; current = current->next)
         {
-            PRINT("   %s\n", current->item->name);
+            printf("   %s\n", current->item->name);
         }
     }
 }
@@ -366,13 +358,13 @@ void command_inventory(struct game *game)
 {
     if (game->backpack->items == NULL)
     {
-        PRINT("Your backpack is empty.");
+        printf("Your backpack is empty.");
         return;
     }
 
     for (struct container *current = game->backpack->items; current != NULL; current = current->next)
     {
-        PRINT("%s\n", current->item->name);
+        printf("%s\n", current->item->name);
     }
 }
 
@@ -380,7 +372,7 @@ void command_commands(struct game *game)
 {
     for (struct container *current = game->parser->commands; current != NULL; current = current->next)
     {
-        PRINT("%-20s%s\n", current->command->name, current->command->description);
+        printf("%-20s%s\n", current->command->name, current->command->description);
     }
 }
 
@@ -388,7 +380,7 @@ void command_north(struct game *game, struct command *command)
 {
     if (game->current_room->north == NULL)
     {
-        PRINT("There is no exit there.\n");
+        printf("There is no exit there.\n");
         return;
     }
 
@@ -405,7 +397,7 @@ void command_south(struct game *game, struct command *command)
 {
     if (game->current_room->south == NULL)
     {
-        PRINT("There is no exit there.\n");
+        printf("There is no exit there.\n");
         return;
     }
 
@@ -416,7 +408,7 @@ void command_east(struct game *game, struct command *command)
 {
     if (game->current_room->east == NULL)
     {
-        PRINT("There is no exit there.\n");
+        printf("There is no exit there.\n");
         return;
     }
 
@@ -428,7 +420,7 @@ void command_west(struct game *game, struct command *command)
 {
     if (game->current_room->west == NULL)
     {
-        PRINT("There is no exit there.\n");
+        printf("There is no exit there.\n");
         return;
     }
 
@@ -438,44 +430,44 @@ void command_west(struct game *game, struct command *command)
 
 void command_about(void)
 {
-    PRINT("It is the year 2099, humanity has made more progress in the last 50 years than in the previous millennium.\n"
-          "This was made possible after an AI revolution in 2023, which led to an exponential progression in technology,\n"
-          "defying all laws such as Moore's Law, Nielsen's Law, and Bell's Law.\n\n"
+    printf("It is the year 2099, humanity has made more progress in the last 50 years than in the previous millennium.\n"
+           "This was made possible after an AI revolution in 2023, which led to an exponential progression in technology,\n"
+           "defying all laws such as Moore's Law, Nielsen's Law, and Bell's Law.\n\n"
 
-          "Despite being 96 years old, your entire body has been augmented with bionic limbs and top-of-the-line health\n"
-          "technology. Just last week, you had your stem cell appointment and GATA6 gene mod.\n"
-          "World's life expectancy has more than doubled since the 20s.\n\n"
+           "Despite being 96 years old, your entire body has been augmented with bionic limbs and top-of-the-line health\n"
+           "technology. Just last week, you had your stem cell appointment and GATA6 gene mod.\n"
+           "World's life expectancy has more than doubled since the 20s.\n\n"
 
-          "However, in terms of politics, the world has not changed much since 2023. Standard political structures\n"
-          "and systems of control still reign supreme, and the gap between the haves and the have-nots has only grown wider.\n\n"
+           "However, in terms of politics, the world has not changed much since 2023. Standard political structures\n"
+           "and systems of control still reign supreme, and the gap between the haves and the have-nots has only grown wider.\n\n"
 
-          "As you reminisce while tinkering with your now-antiquated Arduino UNO in your apartment, your brain's Neuralink\n"
-          "receives a new message for you from an unknown sender.\n");
+           "As you reminisce while tinkering with your now-antiquated Arduino UNO in your apartment, your brain's Neuralink\n"
+           "receives a new message for you from an unknown sender.\n");
 }
 
 void command_version(void)
 {
-    PRINT("\n");
-    PRINT("%s\n", "TECHNOTOPIA: YEAR 0");
-    PRINT("%s\n", "Change the world, one line of code at a time.");
-    PRINT("-----------------------------------------------\n");
-    PRINT("Version %s\n", "1.0.0");
-    PRINT("%s\n", "Kristian Koribsky (2023)");
-    PRINT("%s\n", "kristian.koribsky@student.tuke.sk | kriskoribsky.me");
-    PRINT("\n");
-    PRINT("\n");
+    printf("\n");
+    printf("%s\n", "TECHNOTOPIA: YEAR 0");
+    printf("%s\n", "Change the world, one line of code at a time.");
+    printf("-----------------------------------------------\n");
+    printf("Version %s\n", "1.0.0");
+    printf("%s\n", "Kristian Koribsky (2023)");
+    printf("%s\n", "kristian.koribsky@student.tuke.sk | kriskoribsky.me");
+    printf("\n");
+    printf("\n");
 }
 
 void command_quit(struct game *game)
 {
-    PRINT("Shutting down consciousness...\n");
+    printf("Shutting down consciousness...\n");
     PRINT_DELAY;
     game->state = GAMEOVER;
 }
 
 void command_restart(struct game *game)
 {
-    PRINT("Rewinding time...\n");
+    printf("Rewinding time...\n");
     PRINT_DELAY;
     game->state = RESTART;
 }
@@ -494,25 +486,34 @@ void command_save(struct game *game, struct command *command)
     {
         fprintf(fp, "%s\n", current->text);
     }
-
-    PRINT("Syncing data...\n");
-    PRINT_DELAY;
-    PRINT("Simulation waypoint set. You are now a part of history.\n");
-
     fclose(fp);
+
+    printf("Syncing data...\n");
+    PRINT_DELAY;
+    printf("Simulation waypoint set. You are now a part of history.\n");
 }
 void command_load(struct game *game, struct command *command)
 {
     FILE *fp;
     if ((fp = fopen(command->groups[COMMAND_PARAM] != NULL ? command->groups[COMMAND_PARAM] : DEFAULT_SAVE, "r")) == NULL)
     {
-        PRINT("System error: Simulation data not found. Re-sync required.\n");
+        printf("System error: Simulation data not found. Re-sync required.\n");
         return;
     }
 
-    // reload parser clearing history && parsed commands
+    // reload game
     game->parser = destroy_parser(game->parser);
+    game->world = destroy_world(game->world);
+    game->backpack = destroy_backpack(game->backpack);
+
     game->parser = create_parser();
+    game->world = create_world();
+    game->backpack = create_backpack(BACKPACK_CAPACITY);
+    assert(game->parser != NULL);
+    assert(game->world != NULL);
+    assert(game->backpack != NULL);
+
+    game->current_room = game->world->room;
 
     // execute loaded commands
     char input[INPUT_BUFFER_SIZE];
@@ -520,12 +521,11 @@ void command_load(struct game *game, struct command *command)
     {
         execute_command(game, parse_input(game->parser, input));
     }
-
-    PRINT("Connecting to server...\n");
-    PRINT_DELAY;
-    PRINT("Simulation waypoint found. Your consciousness is now entwined.\n");
-
     fclose(fp);
+
+    printf("Connecting to server...\n");
+    PRINT_DELAY;
+    printf("Simulation waypoint found. Your consciousness is now entwined.\n");
 }
 
 // helpers
