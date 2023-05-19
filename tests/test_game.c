@@ -1,4 +1,4 @@
-#include "../unity/src/unity.h"
+#include "unity/src/unity.h"
 
 #include "game.h"
 

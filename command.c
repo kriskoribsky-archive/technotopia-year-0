@@ -5,42 +5,8 @@
 #include <string.h>
 #include <regex.h>
 
+#include "helpers.h"
 #include "command.h"
-
-#ifdef DEBUG
-#include <assert.h>
-#define ASSERT(expr) assert(expr)
-#else
-#define ASSERT(expr) ((void)0)
-#endif
-
-#define MALLOC(nmemb, ptr)                          \
-    {                                               \
-        (ptr) = malloc((nmemb) * (sizeof(*(ptr)))); \
-        assert((ptr) != NULL);                      \
-    }
-
-#define FREE(ptr)     \
-    {                 \
-        free(ptr);    \
-        (ptr) = NULL; \
-    }
-
-#define CHECK_NULL(ptr)    \
-    {                      \
-        if ((ptr) == NULL) \
-        {                  \
-            return NULL;   \
-        }                  \
-    }
-
-#define CHECK_EMPTY(s)    \
-    {                     \
-        if ((*s) == '\0') \
-        {                 \
-            return NULL;  \
-        }                 \
-    }
 
 #define PATTERN_BUFFER_SIZE 256
 #define ERROR_BUFFER_SIZE 256

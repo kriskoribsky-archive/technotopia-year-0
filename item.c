@@ -3,42 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "helpers.h"
 #include "item.h"
-
-#ifdef DEBUG
-#include <assert.h>
-#define ASSERT(expr) assert(expr)
-#else
-#define ASSERT(expr) ((void)0)
-#endif
-
-#define MALLOC(nmemb, ptr)                          \
-    {                                               \
-        (ptr) = malloc((nmemb) * (sizeof(*(ptr)))); \
-        assert((ptr) != NULL);                      \
-    }
-
-#define FREE(ptr)     \
-    {                 \
-        free(ptr);    \
-        (ptr) = NULL; \
-    }
-
-#define CHECK_NULL(ptr)    \
-    {                      \
-        if ((ptr) == NULL) \
-        {                  \
-            return NULL;   \
-        }                  \
-    }
-
-#define CHECK_EMPTY(s)    \
-    {                     \
-        if ((*s) == '\0') \
-        {                 \
-            return NULL;  \
-        }                 \
-    }
 
 struct item *create_item(char *name, char *description, unsigned int properties)
 {

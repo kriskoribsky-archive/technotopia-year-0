@@ -1,54 +1,15 @@
 #define _POSIX_C_SOURCE 200809L // strdup
 #include <assert.h>
-#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <regex.h>
 
+#include "helpers.h"
 #include "parser.h"
-
-#ifdef DEBUG
-#include <assert.h>
-#define ASSERT(expr) assert(expr)
-#else
-#define ASSERT(expr) ((void)0)
-#endif
-
-#define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
-
-#define MALLOC(nmemb, ptr)                          \
-    {                                               \
-        (ptr) = malloc((nmemb) * (sizeof(*(ptr)))); \
-        assert((ptr) != NULL);                      \
-    }
-
-#define FREE(ptr)     \
-    {                 \
-        free(ptr);    \
-        (ptr) = NULL; \
-    }
-
-#define CHECK_NULL(ptr)    \
-    {                      \
-        if ((ptr) == NULL) \
-        {                  \
-            return NULL;   \
-        }                  \
-    }
-
-#define CHECK_EMPTY(s)    \
-    {                     \
-        if ((*s) == '\0') \
-        {                 \
-            return NULL;  \
-        }                 \
-    }
 
 #define REG_MATCH 0
 #define ERROR_BUFFER_SIZE 256
-
-size_t trim(char *out, size_t len, const char *s);
 
 struct parser *create_parser()
 {
@@ -158,38 +119,4 @@ struct command *parse_input(struct parser *parser, char *input)
     }
 
     return NULL;
-}
-
-size_t trim(char *out, size_t len, const char *s)
-{
-    if (len == 0)
-        return 0;
-
-    const char *end;
-    size_t out_size;
-
-    // trim leading space
-    while (isspace((unsigned char)*s))
-        s++;
-
-    if (*s == 0)
-    {
-        *out = 0;
-        return 1;
-    }
-
-    // trim trailing space
-    end = s + strlen(s) - 1;
-    while (end > s && isspace((unsigned char)*end))
-        end--;
-    end++;
-
-    // set output size to minimum of trimmed string length and buffer size minus 1
-    out_size = (size_t)(end - s) < (size_t)len - 1 ? (size_t)(end - s) : (size_t)len - 1;
-
-    // copy trimmed string and add null terminator
-    memcpy(out, s, out_size);
-    out[out_size] = 0;
-
-    return out_size;
 }

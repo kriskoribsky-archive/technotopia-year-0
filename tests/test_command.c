@@ -1,5 +1,5 @@
 #include <strings.h>
-#include "../unity/src/unity.h"
+#include "unity/src/unity.h"
 
 #include "command.h"
 

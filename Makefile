@@ -147,8 +147,8 @@ endif
 DIR_SRC			:= ./
 DIR_SRT			:= tests/
 
-DIR_UNI			:= ../unity/src/
-DIR_UTI			:= ../utils/src/
+DIR_UNI			:= unity/src/
+DIR_UTI			:= utils/src/
 
 DIR_BLD			:= build/
 DIR_BIN			:= build/bin/
