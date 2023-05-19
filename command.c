@@ -58,6 +58,8 @@ struct command *create_command(char *name, char *description, char *pattern, siz
     sprintf(parsed_pattern, "^[[:space:]]*%s[[:space:]]*$", pattern != NULL ? pattern : name);
     nmatch = nmatch < 1 ? 1 : nmatch; // at least one group for saving into history
 
+    // printf("name: %s | parsed pattern: '%s'\n", name, parsed_pattern);
+
     // precompile pattern
     regex_t preg;
     int rc;

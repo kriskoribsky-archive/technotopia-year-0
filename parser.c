@@ -51,33 +51,32 @@
 struct parser *create_parser()
 {
     // predefine commands
-    struct command *commands[] =
-        {
-            // arena commands
-            create_command("PRESKUMAJ", "Opis predmetu v batohu/miestnosti.", "(PRESKUMAJ)( ([[:print:]]*))?", 4),
-            create_command("VEZMI", "Vložíť predmet z miestnosti do batohu.", "(VEZMI)( ([[:print:]]*))?", 4),
-            create_command("POLOZ", "Položíť predmet z batohu do miestnosti.", "(POLOZ)( ([[:print:]]*))?", 4),
-            create_command("POUZI", "Použiť predmet z batohu alebo miestnosti.", "(POUZI)( ([[:print:]]*))?", 4),
+    struct command *commands[] = {
 
-            create_command("ROZHLIADNI SA", "Informácie o miestnosti.", NULL, 0),
-            create_command("INVENTAR", "Zobrazíť obsah batohu.", "(INVENTAR|I)", 2),
-            create_command("PRIKAZY", "Zoznam všetkých príkazov hry.", "(PRIKAZY|HELP|POMOC)", 2),
+        create_command("PRESKUMAJ", "Opis predmetu v batohu/miestnosti.", "(PRESKUMAJ)( ([[:print:]]*))?", 4),
+        create_command("VEZMI", "Vložíť predmet z miestnosti do batohu.", "(VEZMI)( ([[:print:]]*))?", 4),
+        create_command("POLOZ", "Položíť predmet z batohu do miestnosti.", "(POLOZ)( ([[:print:]]*))?", 4),
+        create_command("POUZI", "Použiť predmet z batohu alebo miestnosti.", "(POUZI)( ([[:print:]]*))?", 4),
 
-            create_command("SEVER", "Ísť smerom na sever od aktuálnej pozície.", "(SEVER|S)", 2),
-            create_command("JUH", "Ísť smerom na juh od aktuálnej pozície.", "(JUH|J)", 2),
-            create_command("VYCHOD", "Ísť smerom na východ od aktuálnej pozície.", "(VYCHOD|V)", 2),
-            create_command("ZAPAD", "Ísť smerom na západ od aktuálnej pozície.", "(ZAPAD|Z)", 2),
+        create_command("ROZHLIADNI SA", "Informácie o miestnosti.", NULL, 0),
+        create_command("INVENTAR", "Zobrazíť obsah batohu.", "(INVENTAR|I)", 2),
+        create_command("PRIKAZY", "Zoznam všetkých príkazov hry.", "(PRIKAZY|HELP|POMOC)", 2),
 
-            create_command("O HRE", "Zobraziť krátky úvod do príbehu.", "(O HRE|ABOUT)", 2),
-            create_command("VERZIA", "Číslo verzie hry a kontakt na autora.", NULL, 0),
+        create_command("SEVER", "Ísť smerom na sever od aktuálnej pozície.", "(SEVER|S)", 2),
+        create_command("JUH", "Ísť smerom na juh od aktuálnej pozície.", "(JUH|J)", 2),
+        create_command("VYCHOD", "Ísť smerom na východ od aktuálnej pozície.", "(VYCHOD|V)", 2),
+        create_command("ZAPAD", "Ísť smerom na západ od aktuálnej pozície.", "(ZAPAD|Z)", 2),
 
-            create_command("KONIEC", "Ukončiť hru.", "(KONIEC|QUIT|EXIT)", 2),
-            create_command("RESTART", "Spustíť hru od začiatku.", NULL, 0),
+        create_command("O HRE", "Zobraziť krátky úvod do príbehu.", "(O HRE|ABOUT)", 2),
+        create_command("VERZIA", "Číslo verzie hry a kontakt na autora.", NULL, 0),
 
-            create_command("ULOZ", "Uložíť stav rozohratej hry na disk.", "(ULOZ|SAVE)( ([[:print:]]*))?", 4),
-            create_command("NAHRAJ", "Nahrať uloženú hru z disku.", "(NAHRAJ|LOAD)( ([[:print:]]*))?", 4),
+        create_command("KONIEC", "Ukončiť hru.", "(KONIEC|QUIT|EXIT)", 2),
+        create_command("RESTART", "Spustíť hru od začiatku.", NULL, 0),
 
-        };
+        create_command("ULOZ", "Uložíť stav rozohratej hry na disk.", "(ULOZ|SAVE)( ([[:print:]]*))?", 4),
+        create_command("NAHRAJ", "Nahrať uloženú hru z disku.", "(NAHRAJ|LOAD)( ([[:print:]]*))?", 4),
+
+    };
 
     // create container list out of commands
     struct container *first = create_container(NULL, COMMAND, commands[0]);
@@ -90,11 +89,10 @@ struct parser *create_parser()
     struct parser *new;
     MALLOC(1, new);
 
-    assert(first != NULL);
-
     new->commands = first;
     new->history = NULL;
 
+    assert(new->commands != NULL);
     return new;
 }
 
@@ -127,11 +125,12 @@ struct command *parse_input(struct parser *parser, char *input)
             // save matched groups
             for (size_t i = 0; i < cmd->nmatch; i++)
             {
-                // defensively free groups becuase of loading from history / command repetition
+                // free previously parsed groups
                 FREE(cmd->groups[i]);
 
                 if (groups[i].rm_so != -1 && groups[i].rm_eo != -1)
                 {
+
                     cmd->groups[i] = strndup(input + groups[i].rm_so, (size_t)(groups[i].rm_eo - groups[i].rm_so));
                     assert(cmd->groups[i] != NULL);
                 }

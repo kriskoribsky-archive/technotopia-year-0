@@ -115,7 +115,7 @@ endif
 
 
 # Flags
-FLG_COMP				= -std=c11 -Werror -Wall -Wconversion -ggdb3 
+FLG_COMP				= -std=c11 -Werror -Wall -Wconversion -ggdb3
 FLG_TEST				= 
 FLG_DEPEND				= 
 FLG_STATIC				= --enable=performance --error-exitcode=1 --language=c --suppress=missingIncludeSystem
@@ -123,11 +123,11 @@ FLG_DYNAMIC				= --show-error-list=yes --track-origins=yes
 FLG_DEBUG				= --tui --silent
 
 ifeq ($(w), 1)
-	FLG_COMP 			+= -pedantic -Wextra -Wshadow 
+	FLG_COMP 			+=  -pedantic -Wextra -Wshadow
 	FLG_STATIC 			+= --enable=all --suppress=knownConditionTrueFalse
 	FLG_DYNAMIC 		+= --leak-check=full --show-leak-kinds=all
 else ifeq ($(w), 2)
-	FLG_COMP 			+= -pedantic -Wextra -Wshadow  -Wmissing-prototypes -Wstrict-prototypes -Wold-style-definition
+	FLG_COMP 			+= -pedantic -Wextra -Wshadow -Wmissing-prototypes -Wstrict-prototypes
 	FLG_STATIC 			+= --enable=all --suppress=knownConditionTrueFalse
 	FLG_DYNAMIC 		+= --leak-check=full --show-leak-kinds=all
 endif
