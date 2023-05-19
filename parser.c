@@ -54,16 +54,16 @@ struct parser *create_parser()
     struct command *commands[] =
         {
             // arena commands
-            create_command("PRESKUMAJ", "Opis predmetu v batohu/miestnosti.", "(PRESKUMAJ)( (.*))?$", 4),
-            create_command("VEZMI", "Vložíť predmet z miestnosti do batohu.", "(VEZMI)( (.*))?$", 4),
-            create_command("POLOZ", "Položíť predmet z batohu do miestnosti.", "(POLOZ)( (.*))?$", 4),
-            create_command("POUZI", "Použiť predmet z batohu alebo miestnosti.", "(POUZI)( (.*))?$", 4),
+            create_command("PRESKUMAJ", "Opis predmetu v batohu/miestnosti.", "(PRESKUMAJ)( ([[:print:]]*))?", 4),
+            create_command("VEZMI", "Vložíť predmet z miestnosti do batohu.", "(VEZMI)( ([[:print:]]*))?", 4),
+            create_command("POLOZ", "Položíť predmet z batohu do miestnosti.", "(POLOZ)( ([[:print:]]*))?", 4),
+            create_command("POUZI", "Použiť predmet z batohu alebo miestnosti.", "(POUZI)( ([[:print:]]*))?", 4),
 
             create_command("ROZHLIADNI SA", "Informácie o miestnosti.", NULL, 0),
             create_command("INVENTAR", "Zobrazíť obsah batohu.", "(INVENTAR|I)", 2),
             create_command("PRIKAZY", "Zoznam všetkých príkazov hry.", "(PRIKAZY|HELP|POMOC)", 2),
 
-            create_command("SEVER", "Ísť smerom na sever od aktuálnej pozície.", "(SEVER|S)", 2),
+            create_command("SEVER", "Ísť smerom na sever od aktuálnej pozície.", "SEVER|S", 2),
             create_command("JUH", "Ísť smerom na juh od aktuálnej pozície.", "(JUH|J)", 2),
             create_command("VYCHOD", "Ísť smerom na východ od aktuálnej pozície.", "(VYCHOD|V)", 2),
             create_command("ZAPAD", "Ísť smerom na západ od aktuálnej pozície.", "(ZAPAD|Z)", 2),
@@ -74,8 +74,8 @@ struct parser *create_parser()
             create_command("KONIEC", "Ukončiť hru.", "(KONIEC|QUIT|EXIT)", 2),
             create_command("RESTART", "Spustíť hru od začiatku.", NULL, 0),
 
-            create_command("ULOZ", "Uložíť stav rozohratej hry na disk.", "(ULOZ|SAVE)( (.*))?$", 4),
-            create_command("NAHRAJ", "Nahrať uloženú hru z disku.", "(NAHRAJ|LOAD)( (.*))?$", 4),
+            create_command("ULOZ", "Uložíť stav rozohratej hry na disk.", "(ULOZ|SAVE)( ([[:print:]]*))?", 4),
+            create_command("NAHRAJ", "Nahrať uloženú hru z disku.", "(NAHRAJ|LOAD)( ([[:print:]]*))?", 4),
 
         };
 

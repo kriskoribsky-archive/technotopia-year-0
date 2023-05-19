@@ -110,7 +110,7 @@ endif
 
 ifdef run
 	MAKEFLAGS   		+= --always-make
-	RUN					= ./$@ || true
+	RUN					= ./$@
 endif
 
 
