@@ -32,14 +32,4 @@ int main(void)
 
     destroy_game(game);
     return EXIT_SUCCESS;
-
-    struct parser *parser = create_parser();
-
-    struct command *cmd = parse_input(parser, "");
-    if (cmd == NULL)
-    {
-        printf("\nis NULL\n\n");
-    }
-
-    destroy_parser(parser);
 }

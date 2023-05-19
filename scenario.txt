@@ -1,28 +1,36 @@
-s
-n
-s
-n
-take Arduino uno rev3
-use sleeping pod
-n
-s
-take Old Rolex Watch
-n
-s
-n
-s
-n
-n
-n
-n
-n
-n
-n
-n
-n
-n
-n
-n
-n
-n
-n
+juh
+sever
+zapad
+vychod
+pouzi sleeping pod
+juh
+sever
+vezmi arduino uno
+sever
+sever
+sever
+juh
+juh
+juh
+sever
+pouzi arduino uno
+sever
+sever
+sever
+sever
+sever
+juh
+sever
+sever
+pouzi arduino uno
+sever
+sever
+sever
+sever
+juh
+sever
+sever
+sever
+sever
+poloz arduino uno
+sever

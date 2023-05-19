@@ -48,33 +48,34 @@
 #define REG_MATCH 0
 #define ERROR_BUFFER_SIZE 256
 
+size_t trim(char *out, size_t len, const char *s);
+
 struct parser *create_parser()
 {
-    // predefine commands
     struct command *commands[] = {
 
-        create_command("PRESKUMAJ", "Opis predmetu v batohu/miestnosti.", "(PRESKUMAJ)( ([[:print:]]*))?", 4),
-        create_command("VEZMI", "Vložíť predmet z miestnosti do batohu.", "(VEZMI)( ([[:print:]]*))?", 4),
-        create_command("POLOZ", "Položíť predmet z batohu do miestnosti.", "(POLOZ)( ([[:print:]]*))?", 4),
-        create_command("POUZI", "Použiť predmet z batohu alebo miestnosti.", "(POUZI)( ([[:print:]]*))?", 4),
+        create_command("PRESKUMAJ", "Opis predmetu v batohu/miestnosti.", "^(PRESKUMAJ)( (.*))?$", 4),
+        create_command("VEZMI", "Vložíť predmet z miestnosti do batohu.", "^(VEZMI)( (.*))?$", 4),
+        create_command("POLOZ", "Položíť predmet z batohu do miestnosti.", "^(POLOZ)( (.*))?$", 4),
+        create_command("POUZI", "Použiť predmet z batohu alebo miestnosti.", "^(POUZI)( (.*))?$", 4),
 
-        create_command("ROZHLIADNI SA", "Informácie o miestnosti.", NULL, 0),
-        create_command("INVENTAR", "Zobrazíť obsah batohu.", "(INVENTAR|I)", 2),
-        create_command("PRIKAZY", "Zoznam všetkých príkazov hry.", "(PRIKAZY|HELP|POMOC)", 2),
+        create_command("ROZHLIADNI SA", "Informácie o miestnosti.", "^(ROZHLIADNI SA)$", 2),
+        create_command("INVENTAR", "Zobrazíť obsah batohu.", "^(INVENTAR|INVENTORY|I)$", 2),
+        create_command("PRIKAZY", "Zoznam všetkých príkazov hry.", "^(PRIKAZY|HELP|POMOC)$", 2),
 
-        create_command("SEVER", "Ísť smerom na sever od aktuálnej pozície.", "(SEVER|S)", 2),
-        create_command("JUH", "Ísť smerom na juh od aktuálnej pozície.", "(JUH|J)", 2),
-        create_command("VYCHOD", "Ísť smerom na východ od aktuálnej pozície.", "(VYCHOD|V)", 2),
-        create_command("ZAPAD", "Ísť smerom na západ od aktuálnej pozície.", "(ZAPAD|Z)", 2),
+        create_command("SEVER", "Ísť smerom na sever od aktuálnej pozície.", "^(SEVER|S)$", 2),
+        create_command("JUH", "Ísť smerom na juh od aktuálnej pozície.", "^(JUH|J)$", 2),
+        create_command("VYCHOD", "Ísť smerom na východ od aktuálnej pozície.", "^(VYCHOD|V)$", 2),
+        create_command("ZAPAD", "Ísť smerom na západ od aktuálnej pozície.", "^(ZAPAD|Z)$", 2),
 
-        create_command("O HRE", "Zobraziť krátky úvod do príbehu.", "(O HRE|ABOUT)", 2),
-        create_command("VERZIA", "Číslo verzie hry a kontakt na autora.", NULL, 0),
+        create_command("O HRE", "Zobraziť krátky úvod do príbehu.", "^(O HRE|ABOUT)$", 2),
+        create_command("VERZIA", "Číslo verzie hry a kontakt na autora.", "^(VERZIA)$", 2),
 
-        create_command("KONIEC", "Ukončiť hru.", "(KONIEC|QUIT|EXIT)", 2),
-        create_command("RESTART", "Spustíť hru od začiatku.", NULL, 0),
+        create_command("KONIEC", "Ukončiť hru.", "^(KONIEC|QUIT|EXIT)$", 2),
+        create_command("RESTART", "Spustíť hru od začiatku.", "^(RESTART)$", 2),
 
-        create_command("ULOZ", "Uložíť stav rozohratej hry na disk.", "(ULOZ|SAVE)( ([[:print:]]*))?", 4),
-        create_command("NAHRAJ", "Nahrať uloženú hru z disku.", "(NAHRAJ|LOAD)( ([[:print:]]*))?", 4),
+        create_command("NAHRAJ", "Nahrať uloženú hru z disku.", "^(NAHRAJ|LOAD)( (.*))?$", 4),
+        create_command("ULOZ", "Uložíť stav rozohratej hry na disk.", "^(ULOZ|SAVE)( (.*))?$", 4),
 
     };
 
@@ -113,6 +114,13 @@ struct command *parse_input(struct parser *parser, char *input)
     CHECK_NULL(input);
     CHECK_EMPTY(input);
 
+    // parse input
+    char parsed_input[strlen(input)];
+    trim(parsed_input, strlen(input), input);
+
+    CHECK_NULL(parsed_input);
+    CHECK_EMPTY(parsed_input);
+
     // list trough available commands
     for (struct container *current = parser->commands; current != NULL; current = current->next)
     {
@@ -120,7 +128,7 @@ struct command *parse_input(struct parser *parser, char *input)
 
         int rc;
         regmatch_t groups[cmd->nmatch];
-        if ((rc = regexec(&cmd->preg, input, cmd->nmatch, groups, 0)) == REG_MATCH)
+        if ((rc = regexec(&cmd->preg, parsed_input, cmd->nmatch, groups, 0)) == REG_MATCH)
         {
             // save matched groups
             for (size_t i = 0; i < cmd->nmatch; i++)
@@ -131,7 +139,7 @@ struct command *parse_input(struct parser *parser, char *input)
                 if (groups[i].rm_so != -1 && groups[i].rm_eo != -1)
                 {
 
-                    cmd->groups[i] = strndup(input + groups[i].rm_so, (size_t)(groups[i].rm_eo - groups[i].rm_so));
+                    cmd->groups[i] = strndup(parsed_input + groups[i].rm_so, (size_t)(groups[i].rm_eo - groups[i].rm_so));
                     assert(cmd->groups[i] != NULL);
                 }
             }
@@ -149,4 +157,38 @@ struct command *parse_input(struct parser *parser, char *input)
     }
 
     return NULL;
+}
+
+size_t trim(char *out, size_t len, const char *s)
+{
+    if (len == 0)
+        return 0;
+
+    const char *end;
+    size_t out_size;
+
+    // Trim leading space
+    while (isspace((unsigned char)*s))
+        s++;
+
+    if (*s == 0)
+    {
+        *out = 0;
+        return 1;
+    }
+
+    // Trim trailing space
+    end = s + strlen(s) - 1;
+    while (end > s && isspace((unsigned char)*end))
+        end--;
+    end++;
+
+    // Set output size to minimum of trimmed string length and buffer size minus 1
+    out_size = (size_t)(end - s) < (size_t)len - 1 ? (size_t)(end - s) : (size_t)len - 1;
+
+    // Copy trimmed string and add null terminator
+    memcpy(out, s, out_size);
+    out[out_size] = 0;
+
+    return out_size;
 }

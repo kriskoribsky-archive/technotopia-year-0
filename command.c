@@ -54,16 +54,13 @@ struct command *create_command(char *name, char *description, char *pattern, siz
     CHECK_EMPTY(description);
 
     // prepare pattern
-    char parsed_pattern[PATTERN_BUFFER_SIZE];
-    sprintf(parsed_pattern, "^[[:space:]]*%s[[:space:]]*$", pattern != NULL ? pattern : name);
+    pattern = pattern != NULL ? pattern : name;
     nmatch = nmatch < 1 ? 1 : nmatch; // at least one group for saving into history
-
-    // printf("name: %s | parsed pattern: '%s'\n", name, parsed_pattern);
 
     // precompile pattern
     regex_t preg;
     int rc;
-    if ((rc = regcomp(&preg, parsed_pattern, REG_EXTENDED | REG_ICASE)) != REGCOMP_SUCCESS)
+    if ((rc = regcomp(&preg, pattern, REG_EXTENDED | REG_ICASE)) != REGCOMP_SUCCESS)
     {
         char buffer[ERROR_BUFFER_SIZE];
         regerror(rc, &preg, buffer, sizeof(buffer));
