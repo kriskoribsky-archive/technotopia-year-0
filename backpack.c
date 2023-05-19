@@ -86,7 +86,7 @@ bool add_item_to_backpack(struct backpack *backpack, struct item *item)
     {
         struct container *c = create_container(backpack->items, ITEM, item);
         backpack->items = backpack->items != NULL ? backpack->items : c;
-        backpack->size++;
+        backpack->size += 1;
         return true;
     }
 
@@ -100,7 +100,7 @@ void delete_item_from_backpack(struct backpack *backpack, struct item *item)
     CHECK_NULL_VOID(item);
 
     backpack->items = remove_container(backpack->items, item);
-    backpack->size--;
+    backpack->size -= 1;
 }
 
 struct item *get_item_from_backpack(const struct backpack *backpack, char *name)

@@ -1,18 +1,1 @@
-# default gam
-void command_save(struct game *game, struct command *command)
-{
-    FILE *fp = fopen(command->groups[2] != NULL ? command->groups[2] : DEFAULT_SAVE, "w");
-
-    for (struct container *current = game->parser->history; current != NULL; current = current->next)
-    {
-        fprintf(fp, "%s\n", current->text);
-    }
-
-    fclose(fp);
-}
-void command_load(struct game *game, struct command *command)
-{
-    FILE *fp = fopen(command->groups[2] != NULL ? command->groups[2] : DEFAULT_SAVE, "r");
-
-    fclose(fp);e save file
 save.txt

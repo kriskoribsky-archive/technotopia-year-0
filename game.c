@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h> // sleep
+#include <strings.h>
 
 #include "game.h"
 
@@ -47,8 +47,6 @@
 // game settings
 #define BACKPACK_CAPACITY 5
 #define DEFAULT_SAVE "save.txt"
-// #define PRINT_DELAY sleep(1)
-#define PRINT_DELAY ((void)0)
 
 // commands
 void command_inspect(struct game *game, struct command *command);
@@ -80,13 +78,13 @@ void save_to_history(struct game *game, struct command *command);
 #define COMMAND_ENTIRE 0 // groups index of whole command
 #define COMMAND_PARAM 3  // group index of param part
 #define SAVE_COMMAND (save_to_history(game, command))
-#define REGISTER_COMMAND(cmd, callback)        \
-    {                                          \
-        if (strcmp(command->name, (cmd)) == 0) \
-        {                                      \
-            callback;                          \
-            return;                            \
-        }                                      \
+#define REGISTER_COMMAND(cmd, callback)            \
+    {                                              \
+        if (strcasecmp(command->name, (cmd)) == 0) \
+        {                                          \
+            callback;                              \
+            return;                                \
+        }                                          \
     }
 
 void play_game(struct game *game)
@@ -165,29 +163,6 @@ void execute_command(struct game *game, struct command *command)
         printf("You do not have knowledge to do that.\n");
         return;
     }
-
-    REGISTER_COMMAND("Inspect", command_inspect(game, command));
-    REGISTER_COMMAND("Take", command_take(game, command));
-    REGISTER_COMMAND("Put", command_put(game, command));
-    REGISTER_COMMAND("Use", command_use(game, command));
-
-    REGISTER_COMMAND("Explore", command_explore(game));
-    REGISTER_COMMAND("Inventory", command_inventory(game));
-    REGISTER_COMMAND("Commands", command_commands(game));
-
-    REGISTER_COMMAND("North", command_north(game, command));
-    REGISTER_COMMAND("South", command_south(game, command));
-    REGISTER_COMMAND("East", command_east(game, command));
-    REGISTER_COMMAND("West", command_west(game, command));
-
-    REGISTER_COMMAND("About", command_about());
-    REGISTER_COMMAND("Version", command_version());
-
-    REGISTER_COMMAND("Quit", command_quit(game));
-    REGISTER_COMMAND("Restart", command_restart(game));
-
-    REGISTER_COMMAND("Save", command_save(game, command));
-    REGISTER_COMMAND("Load", command_load(game, command));
 
     // arena commands
     REGISTER_COMMAND("PRESKUMAJ", command_inspect(game, command));
@@ -461,14 +436,12 @@ void command_version(void)
 void command_quit(struct game *game)
 {
     printf("Shutting down consciousness...\n");
-    PRINT_DELAY;
     game->state = GAMEOVER;
 }
 
 void command_restart(struct game *game)
 {
     printf("Rewinding time...\n");
-    PRINT_DELAY;
     game->state = RESTART;
 }
 
@@ -489,7 +462,6 @@ void command_save(struct game *game, struct command *command)
     fclose(fp);
 
     printf("Syncing data...\n");
-    PRINT_DELAY;
     printf("Simulation waypoint set. You are now a part of history.\n");
 }
 void command_load(struct game *game, struct command *command)
@@ -524,7 +496,6 @@ void command_load(struct game *game, struct command *command)
     fclose(fp);
 
     printf("Connecting to server...\n");
-    PRINT_DELAY;
     printf("Simulation waypoint found. Your consciousness is now entwined.\n");
 }
 

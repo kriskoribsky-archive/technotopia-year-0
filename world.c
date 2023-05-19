@@ -87,7 +87,7 @@ struct container *create_world()
     set_exits_from_room(tempn, NULL, tempm, NULL, NULL);
 
     // items
-    struct item *arduino = create_item("Arduino Uno Rev3",
+    struct item *arduino = create_item("Arduino Uno",
                                        "A microcontroller board that utilizes the 8-bit ATmega328P microchip. It features 14\n"
                                        "digital input/output pins and 6 analog inputs. This piece of silicon is very rare to\n"
                                        "find these days due to government restrictions. Each new hardware piece is connected\n"

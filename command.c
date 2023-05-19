@@ -57,12 +57,12 @@ struct command *create_command(char *name, char *description, char *pattern, siz
     char valid_pattern[PATTERN_BUFFER_SIZE];
     if (pattern == NULL)
     {
-        sprintf(valid_pattern, "^%s$", name);
+        sprintf(valid_pattern, "^\\s*%s\\s*$", name);
         nmatch = 1;
     }
     else
     {
-        sprintf(valid_pattern, "%s", pattern);
+        sprintf(valid_pattern, "^\\s*%s\\s*$", pattern);
     }
 
     // precompile pattern
