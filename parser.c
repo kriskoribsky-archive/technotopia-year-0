@@ -63,7 +63,7 @@ struct parser *create_parser()
             create_command("INVENTAR", "Zobrazíť obsah batohu.", "(INVENTAR|I)", 2),
             create_command("PRIKAZY", "Zoznam všetkých príkazov hry.", "(PRIKAZY|HELP|POMOC)", 2),
 
-            create_command("SEVER", "Ísť smerom na sever od aktuálnej pozície.", "SEVER|S", 2),
+            create_command("SEVER", "Ísť smerom na sever od aktuálnej pozície.", "(SEVER|S)", 2),
             create_command("JUH", "Ísť smerom na juh od aktuálnej pozície.", "(JUH|J)", 2),
             create_command("VYCHOD", "Ísť smerom na východ od aktuálnej pozície.", "(VYCHOD|V)", 2),
             create_command("ZAPAD", "Ísť smerom na západ od aktuálnej pozície.", "(ZAPAD|Z)", 2),
